@@ -32,7 +32,7 @@
     <div body-class="px-6 py-2">
       <draggable style="min-height: 100vh" item-key="position" v-model="itemsDraggable" @start="drag=true" @end="drag=false" group="people">
         <template #item="{ element }">
-          <div class="my-4 mx-2 p-2 bg-zinc-950">{{ element.task }}</div>
+          <div @click="toggleModal(element)" class="my-4 mx-2 p-2 bg-zinc-950">{{ element.task }}</div>
         </template>
       </draggable>
         <!-- <div class="flex items-center justify-between">
@@ -67,7 +67,8 @@ const column = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (event: 'refreshBoard'): void
+  (event: 'refreshBoard'): void,
+  (event: 'onTaskClicked', task: Todo): void
 }>()
 
 import { BoardColumn } from '~/types/board_columns'
@@ -91,6 +92,10 @@ const itemsDraggable = computed({
     updateTaskBoardColumnInSupabase(newValue)
   }
 })
+
+async function toggleModal(task: Todo) {
+  emit('onTaskClicked', task)
+}
 
 async function addTask () {
   if (newTask.value.length === 0) {

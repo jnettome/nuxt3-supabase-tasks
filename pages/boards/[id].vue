@@ -28,8 +28,14 @@
     </form>
 
     <div v-if="board.board_columns.length > 0" class="mt-16 border-1 border-gray-50 flex overflow-x-auto">
-      <BoardColumnComponent @refreshBoard="onRefreshBoard" v-for="column in board.board_columns" :key="column.id" v-bind="column" />
+      <BoardColumnComponent @onTaskClicked="onTaskClicked" @refreshBoard="onRefreshBoard" v-for="column in board.board_columns" :key="column.id" v-bind="column" />
     </div>
+
+    <ModalComponent :show="isShowModal" @onCloseModal="onCloseModal">
+      <p class="mb-4">
+        {{ modalTask }}
+      </p>
+    </ModalComponent>
   </div>
 </template>
 
@@ -40,6 +46,20 @@ import { BoardColumn } from '~/types/board_columns'
 definePageMeta({
   middleware: 'auth'
 })
+
+const isShowModal = ref(false)
+const modalTask = ref()
+
+async function onCloseModal () {
+  isShowModal.value = false
+}
+
+async function onTaskClicked (task: Todo) {
+  // console.log('onTaskClicked', task)
+  modalTask.value = task
+  isShowModal.value = true
+  // !isShowModal.value
+}
 
 import type { RealtimeChannel } from '@supabase/supabase-js'
 let realtimeChannel: RealtimeChannel
