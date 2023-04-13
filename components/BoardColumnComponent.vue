@@ -1,6 +1,15 @@
 <template>
   <div class="block">
-    <h3>{{ name }}</h3>
+    <div class="flex items-center justify-between">
+      <h3>{{ name }}</h3>
+
+      <button
+        class="ml-3 text-red-600"
+        @click="removeColumn(id)"
+      >
+        Remove
+      </button>
+    </div>
 
     <form class="flex gap-2 my-2" @submit.prevent="addTask">
       <input
@@ -12,44 +21,30 @@
         autofocus
         :loading="loading"
       />
-      <button type="submit" variant="white">
+      <button type="submit">
         Add
       </button>
     </form>
-    <div v-if="todos.length > 0" body-class="px-6 py-2 card">
-      <ul>
-        <li
-          v-for="(task, index) of todos"
-          :key="`task${index}`"
-          :class="{ 'border-b': index !== todos.length - 1 }"
-          class="border-gray-200 divide-y divide-gray-200"
-        >
-          <div class="py-2">
-            <label :label-class="`block font-medium u-text-gray-700 ${task.is_complete && 'line-through'}`" wrapper-class="flex items-center justify-between w-full" :label="task.task" :name="`task${index}`">
-              {{task.task}}
-              <div class="flex items-center justify-between">
-                <input type="checkbox"
-                  v-model="task.is_complete"
-                  :name="`task${index}`"
-                  icon-off="heroicons-solid:x"
-                  icon-on="heroicons-solid:check"
-                  @click="updateTask(task)"
-                />
-                <button
-                  class="ml-3 text-red-600"
-                  size="sm"
-                  variant="transparent"
-                  icon="heroicons-outline:trash"
-                  @click="removeTask(task)"
-                >
-                  Remove
-                </button>
-              </div>
-            </label>
-          </div>
-        </li>
-      </ul>
+
+    <div v-if="todos.length > 0" body-class="px-6 py-2">
+      <div v-for="task in todos" :key="task.id">
+        <div class="flex items-center justify-between">
+          <input
+            type="checkbox"
+            :checked="task.is_complete"
+            @change="updateTask(task)"
+          />
+          <span>{{ task.task }}</span>
+          <button
+            class="ml-3 text-red-600"
+            @click="removeTask(task)"
+          >
+            Remove
+          </button>
+        </div>
+      </div>
     </div>
+    
   </div>
 </template>
 
@@ -58,9 +53,14 @@
 const column = defineProps<{
   id: number,
   name: string,
-  todos: Array<{id: number, task: string}>
+  todos: Array<{id: number, task: string, board_id: number, board_column_id: number, position: number, is_complete: boolean, created_at: string }>
 }>()
 
+const emit = defineEmits<{
+  (event: 'refreshBoard'): void
+}>()
+
+import { BoardColumn } from '~/types/board_columns'
 import { Todo } from '~/types/todos'
 
 const client = useSupabaseClient()
@@ -70,13 +70,13 @@ const newTask = ref('')
 const route = useRoute()
 
 // { data: tasks }
-const { data: { value: tasks } } = await useAsyncData('todos', async () => {
-  return await client.from<Todo>('todos')
-    .select('*')
-    .eq('user', user.value?.id)
-    .eq('board_id', route.params.id)
-    .eq('board_column_id', column.id)
-})
+// const { data: { value: tasks } } = await useAsyncData('todos', async () => {
+//   return await client.from<Todo>('todos')
+//     .select('*')
+//     .eq('user', user.value?.id)
+//     .eq('board_id', route.params.id)
+//     .eq('board_column_id', column.id)
+// })
 
 async function addTask () {
   if (newTask.value.length === 0) {
@@ -84,7 +84,7 @@ async function addTask () {
   }
 
   loading.value = true
-  const { error, data } = await client.from<Todo>('todos').upsert({
+  const { error, data } = await client.from<Todo>('todos').insert({
     user_id: user.value.id,
     task: newTask.value,
     is_complete: false,
@@ -93,15 +93,16 @@ async function addTask () {
     // position?: number;
     // user_id?: string;
     // user?: string;
-  })
+  }).select('*').single()
 
   if (error) {
     return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
-  tasks.push(data[0])
   newTask.value = ''
   loading.value = false
+
+  emit('refreshBoard')
 }
 
 async function updateTask (task: Todo) {
@@ -110,6 +111,8 @@ async function updateTask (task: Todo) {
   if (error) {
     return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
+
+  emit('refreshBoard')
 }
 
 async function removeTask (task: Todo) {
@@ -119,7 +122,23 @@ async function removeTask (task: Todo) {
     return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
-  tasks.splice(tasks.indexOf(task), 1)
+  // tasks.splice(tasks.indexOf(task), 1)
+  emit('refreshBoard')
+
+}
+
+async function removeColumn (boardColumnId: number) {
+  if(!confirm('Are you sure you want to delete this column?')) return;
+
+  const { error } = await client.from<Board>('board_columns').delete().match({ id: boardColumnId })
+
+  if (error) {
+    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+  }
+
+  emit('refreshBoard')
+
+  // router.push('/boards')
 }
 </script>
 
