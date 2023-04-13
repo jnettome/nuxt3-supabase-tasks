@@ -5,29 +5,18 @@
     </h2>
 
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
-      <div class="u-bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div class="bg-gray-700 py-8 px-4 shadow sm:rounded-lg sm:px-10">
         <div v-if="!emailSent">
-          <div class="relative">
-            <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-t border-gray-300" />
-            </div>
-            <div class="relative flex justify-center text-sm">
-              <span class="px-2 u-bg-white text-gray-500"> Connect with </span>
-            </div>
-          </div>
-
-          <input v-model="email" class="u-input" type="email" placeholder="Email" />
-
-          <button
-            class="mt-3"
-            icon="mdi:github"
-            block
-            label="Github"
-            variant="black"
-            :loading="loading"
-            @click="login()"
-          >entrar</button>
-
+          <form @submit.stop.prevent="login">
+            <input v-model="email" class="w-full bg-gray-700 px-3 py-2 outline-0 border-b" type="email" placeholder="Email" autofocus />
+            <button
+              class="ml-3"
+              :disabled="loading"
+              type="submit"
+            >
+              entrar
+            </button>
+          </form>
         </div>
 
         <div v-else>
