@@ -27,7 +27,7 @@
       </button>
     </form>
 
-    <div v-if="board.board_columns.length > 0" body-class="px-6 py-2">
+    <div v-if="board.board_columns.length > 0" class="mt-16 border-1 border-gray-50 flex">
       <BoardColumnComponent @refreshBoard="onRefreshBoard" v-for="column in board.board_columns" :key="column.id" v-bind="column" />
     </div>
   </div>
@@ -41,22 +41,42 @@ definePageMeta({
   middleware: 'auth'
 })
 
+import type { RealtimeChannel } from '@supabase/supabase-js'
+let realtimeChannel: RealtimeChannel
+
 const client = useSupabaseClient()
 const user = useSupabaseUser()
 const loadingColumn = ref(false)
 const newColumn = ref('')
 
+
 const route = useRoute()
 const router = useRouter()
 
-const { data: { value: { data: board } }, refresh } = await useAsyncData('board', async () => {
-  return await client.from<Board>('boards')
+const { data: board, refresh } = await useAsyncData('board', async () => {
+  const { data, error } = await client.from<Board>('boards')
     .select('id, name, board_columns(*, todos(*)))')
     .eq('id', route.params.id)
     .eq('user_id', user.value?.id)
     .limit(1)
     .single()
+  return data
 })
+
+// Once page is mounted, listen to changes on the `collaborators` table and refresh collaborators when receiving event
+// onMounted(() => {
+//   // Real time listener for new workouts
+//   realtimeChannel = client.channel('public:todos').on(
+//     'postgres_changes',
+//     { event: '*', schema: 'public', table: 'todos' },
+//     () => refresh()
+//   )
+//   realtimeChannel.subscribe()
+// })
+//   // Don't forget to unsubscribe when user left the page
+// onUnmounted(() => {
+//   client.removeChannel(realtimeChannel)
+// })
 
 // const { data: { value: { data: boards } } } = await useAsyncData('board_columns', async () => {
 //   return await client.from<BoardColumn>('board_columns')
