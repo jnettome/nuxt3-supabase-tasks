@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-800 text-slate-50">
     <header class="border-gray-200 px-4 lg:px-6 py-2.5">
-      <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+      <div class="flex flex-wrap justify-between items-center mx-auto">
         <NuxtLink to="/boards">tarefas</NuxtLink>
         <div class="flex items-center justify-between">
           <button @click="toggleDark" class="p-2 mr-4">

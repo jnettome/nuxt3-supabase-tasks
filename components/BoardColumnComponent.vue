@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-zinc-800 min-h-16 mr-4">
+  <div class="bg-zinc-800 min-h-16 mr-4 w-full min-w-full md:min-w-0 md:w-1/4 lg:max-w-sm">
     <header class="flex items-center justify-between p-2 border-b border-gray-500 mb-4">
       <h3 class="font-medium">{{ name }}</h3>
 

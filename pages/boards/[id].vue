@@ -27,7 +27,7 @@
       </button>
     </form>
 
-    <div v-if="board.board_columns.length > 0" class="mt-16 border-1 border-gray-50 flex">
+    <div v-if="board.board_columns.length > 0" class="mt-16 border-1 border-gray-50 flex overflow-x-auto">
       <BoardColumnComponent @refreshBoard="onRefreshBoard" v-for="column in board.board_columns" :key="column.id" v-bind="column" />
     </div>
   </div>
@@ -64,30 +64,26 @@ const { data: board, refresh } = await useAsyncData('board', async () => {
 })
 
 // Once page is mounted, listen to changes on the `collaborators` table and refresh collaborators when receiving event
-// onMounted(() => {
-//   // Real time listener for new workouts
-//   realtimeChannel = client.channel('public:todos').on(
-//     'postgres_changes',
-//     { event: '*', schema: 'public', table: 'todos' },
-//     () => refresh()
-//   )
-//   realtimeChannel.subscribe()
-// })
-//   // Don't forget to unsubscribe when user left the page
-// onUnmounted(() => {
-//   client.removeChannel(realtimeChannel)
-// })
-
-// const { data: { value: { data: boards } } } = await useAsyncData('board_columns', async () => {
-//   return await client.from<BoardColumn>('board_columns')
-//     .select('id, name, todos(*)')
-//     .eq('board_id', route.params.id)
-//     .eq('user_id', user.value?.id)
-// })
+onMounted(() => {
+  // Real time listener for new workouts
+  realtimeChannel = client.channel('public:todos').on(
+    'postgres_changes',
+    // { event: '*', schema: 'public', table: 'todos', filter: `user_id=eq.${user.value?.id}&board_id=eq.${route.params.id}` },
+    { event: '*', schema: 'public', table: 'todos', filter: `board_id=eq.${route.params.id}` },
+    () => refresh()
+  )
+  realtimeChannel.subscribe()
+  // https://supabase.com/docs/guides/realtime/extensions/postgres-changes#filter-changes
+  // https://supabase.com/docs/guides/realtime/extensions/postgres-changes#custom-tokens
+})
+  // Don't forget to unsubscribe when user left the page
+onUnmounted(() => {
+  client.removeChannel(realtimeChannel)
+})
 
 async function onRefreshBoard () {
-  console.log('onRefreshBoard')
-  await refresh()
+  // console.log('onRefreshBoard')
+  // await refresh()
   // refreshNuxtData()
 }
 
