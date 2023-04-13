@@ -34,6 +34,7 @@
               aria-labelledby="modal-headline"
               v-show="show"
               tabindex="-1"
+              v-on-click-outside="closeModal"
             >
               <!-- @keydown.esc="closeModal" -->
               <button class="absolute top-4 right-4">
@@ -68,6 +69,8 @@ const vEscape: Directive = {
     delete el._keydownCallback
   }
 }
+
+import { vOnClickOutside } from '@vueuse/components'
 
 const modal = ref<HTMLElement>()
 

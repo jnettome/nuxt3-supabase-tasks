@@ -16,6 +16,7 @@
     "nuxt": "^3.4.0"
   },
   "dependencies": {
+    "@vueuse/components": "^9.13.0",
     "vuedraggable": "^4.1.0"
   }
 }
