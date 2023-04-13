@@ -85,7 +85,7 @@ onUnmounted(() => {
 
 async function onRefreshBoard () {
   // console.log('onRefreshBoard')
-  // await refresh()
+  await refresh()
   // refreshNuxtData()
 }
 

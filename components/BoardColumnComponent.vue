@@ -1,7 +1,7 @@
 <template>
   <div class="bg-zinc-800 min-h-16 mr-4 w-full min-w-full md:min-w-0 md:w-1/4 lg:max-w-sm">
     <header class="flex items-center justify-between p-2 border-b border-gray-500 mb-4">
-      <h3 class="font-medium">{{ name }}</h3>
+      <h3 class="font-medium">{{ name }} {{ id }}</h3>
 
       <button
         class="ml-3 text-red-200"
@@ -27,15 +27,14 @@
     </form>
 
     <!-- {{ drag }} -->
+    <!-- v-if="todos.length > 0" -->
 
-    <div v-if="todos.length > 0" body-class="px-6 py-2">
-      <!-- <div v-for="task in todos" :key="task.id" class="my-4 mx-2 p-2 bg-zinc-950"> -->
-  <!--  -->
-        <draggable @change="onChange" item-key="position" v-model="itemsDraggable" @start="drag=true" @end="drag=false" group="people">
-          <template #item="{ element }">
-            <div class="my-4 mx-2 p-2 bg-zinc-950">{{ element.task }}</div>
-          </template>
-        </draggable>
+    <div body-class="px-6 py-2">
+      <draggable style="min-height: 100vh" item-key="position" v-model="itemsDraggable" @start="drag=true" @end="drag=false" group="people">
+        <template #item="{ element }">
+          <div class="my-4 mx-2 p-2 bg-zinc-950">{{ element.task }}</div>
+        </template>
+      </draggable>
         <!-- <div class="flex items-center justify-between">
           <input
             type="checkbox"
@@ -87,25 +86,11 @@ const itemsDraggable = computed({
   },
   set(newValue) {
     // aqui ele chega uma array com todos os elementos na nova ordem
-    updataTaskPositionInSupabase(newValue)
+    // console.log(newValue)
+    updateTaskPositionInSupabase(newValue)
+    updateTaskBoardColumnInSupabase(newValue)
   }
 })
-
-async function onChange(params: any) {
-  if (params.moved) {
-    console.log(`moved: ${params.moved.element.task} -> old: ${params.moved.oldIndex} -> new: ${params.moved.newIndex}`, )
-  } else {
-    console.log('não moveu')
-    console.log(params)
-  }
-  
-  // if(params.created) {
-  //   console.log('created: ', params.created.element.id)
-  //   console.log('created: ', params.created.element.task)
-  //   console.log('created: ', params.created.oldIndex)
-  //   console.log('created: ', params.created.newIndex)
-  // }
-}
 
 async function addTask () {
   if (newTask.value.length === 0) {
@@ -156,14 +141,23 @@ async function updateTaskPosition (taskId: number, position: number) {
   loading.value = false
 }
 
-async function updataTaskPositionInSupabase (value: Array) {
+async function updateTaskBoardColumn (taskId: number, boardColumnId: number) {
+  loading.value = true
+  const { error } = await client.from<Todo>('todos').update({ board_column_id: boardColumnId }).match({ id: taskId })
+
+  if (error) {
+    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+  }
+
+  emit('refreshBoard')
+  loading.value = false
+}
+
+
+async function updateTaskPositionInSupabase (value: Array) {
   loading.value = true
 
-  let payload = []
-  value.map((item, index) => {
-    payload.push({ id: item.id, position: index })
-  })
-  
+  const payload = value.map((item: any, index: number) => ({ id: item.id, position: index }))
   const { data, error } = await client.rpc('update_todos_order', { payload });
   
   if (error) {
@@ -171,8 +165,20 @@ async function updataTaskPositionInSupabase (value: Array) {
   }
 
   loading.value = false
-  // console.log(data)
 }
+
+async function updateTaskBoardColumnInSupabase (newValue: Array) {
+  if (column.todos.length === newValue.length)
+    return
+
+  // find added cards that weren't on the original todos array before
+  const newColumn = newValue.filter(x => !column.todos.includes(x));
+  if (newColumn.length > 0) {
+    console.log('new todo added', newColumn)
+
+    updateTaskBoardColumn(newColumn[0].id, column.id)
+  }
+}   
 
 async function removeTask (task: Todo) {
   const { error } = await client.from<Todo>('todos').delete().match({ id: task.id })
