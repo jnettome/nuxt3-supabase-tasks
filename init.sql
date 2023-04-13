@@ -60,3 +60,22 @@ create policy "Individuals can update their own board_columns." on board_columns
     update using (auth.uid() = user_id);
 create policy "Individuals can delete their own board_columns." on board_columns for
     delete using (auth.uid() = user_id);
+
+
+
+
+
+
+
+
+-- /* funcao massa pra atualizar varios position */
+-- https://github.com/supabase/postgrest-js/issues/174
+-- await supabase.rpc('update_todos_order', {payload: [{ "id": 11, "position": 1 }, { "id": 1, "position": 2 }]}));
+create or replace function update_todos_order(payload json) returns setof todos as $$
+  update todos as todos set position = x.position
+  from (
+    select id, position from json_populate_recordset(null::todos, payload)
+  ) as x
+  where todos.id = x.id
+  returning todos.*;
+$$ language sql;

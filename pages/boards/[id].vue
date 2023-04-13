@@ -58,6 +58,8 @@ const { data: board, refresh } = await useAsyncData('board', async () => {
     .select('id, name, board_columns(*, todos(*)))')
     .eq('id', route.params.id)
     .eq('user_id', user.value?.id)
+    .order('position', { foreignTable: 'board_columns.todos', ascending: true })
+    .order('created_at', { foreignTable: 'board_columns.todos', ascending: false })
     .limit(1)
     .single()
   return data

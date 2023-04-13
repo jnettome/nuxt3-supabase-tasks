@@ -26,8 +26,16 @@
       />
     </form>
 
+    <!-- {{ drag }} -->
+
     <div v-if="todos.length > 0" body-class="px-6 py-2">
-      <div v-for="task in todos" :key="task.id" class="my-4 mx-2 p-2 bg-zinc-950">
+      <!-- <div v-for="task in todos" :key="task.id" class="my-4 mx-2 p-2 bg-zinc-950"> -->
+  <!--  -->
+        <draggable @change="onChange" item-key="position" v-model="itemsDraggable" @start="drag=true" @end="drag=false" group="people">
+          <template #item="{ element }">
+            <div class="my-4 mx-2 p-2 bg-zinc-950">{{ element.task }}</div>
+          </template>
+        </draggable>
         <!-- <div class="flex items-center justify-between">
           <input
             type="checkbox"
@@ -42,14 +50,16 @@
             Remove
           </button>
         </div> -->
-        <span>{{ task.task }}</span>
-      </div>
+        
+      <!-- </div> -->
     </div>
     
   </div>
 </template>
 
 <script setup lang="ts">
+import draggable from "vuedraggable";
+
 // set props
 const column = defineProps<{
   id: number,
@@ -70,14 +80,32 @@ const loading = ref(false)
 const newTask = ref('')
 const route = useRoute()
 
-// { data: tasks }
-// const { data: { value: tasks } } = await useAsyncData('todos', async () => {
-//   return await client.from<Todo>('todos')
-//     .select('*')
-//     .eq('user', user.value?.id)
-//     .eq('board_id', route.params.id)
-//     .eq('board_column_id', column.id)
-// })
+const drag = ref(false)
+const itemsDraggable = computed({
+  get() {
+    return column.todos
+  },
+  set(newValue) {
+    // aqui ele chega uma array com todos os elementos na nova ordem
+    updataTaskPositionInSupabase(newValue)
+  }
+})
+
+async function onChange(params: any) {
+  if (params.moved) {
+    console.log(`moved: ${params.moved.element.task} -> old: ${params.moved.oldIndex} -> new: ${params.moved.newIndex}`, )
+  } else {
+    console.log('não moveu')
+    console.log(params)
+  }
+  
+  // if(params.created) {
+  //   console.log('created: ', params.created.element.id)
+  //   console.log('created: ', params.created.element.task)
+  //   console.log('created: ', params.created.oldIndex)
+  //   console.log('created: ', params.created.newIndex)
+  // }
+}
 
 async function addTask () {
   if (newTask.value.length === 0) {
@@ -116,6 +144,36 @@ async function updateTask (task: Todo) {
   emit('refreshBoard')
 }
 
+async function updateTaskPosition (taskId: number, position: number) {
+  loading.value = true
+  const { error } = await client.from<Todo>('todos').update({ position: position }).match({ id: taskId })
+
+  if (error) {
+    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+  }
+
+  emit('refreshBoard')
+  loading.value = false
+}
+
+async function updataTaskPositionInSupabase (value: Array) {
+  loading.value = true
+
+  let payload = []
+  value.map((item, index) => {
+    payload.push({ id: item.id, position: index })
+  })
+  
+  const { data, error } = await client.rpc('update_todos_order', { payload });
+  
+  if (error) {
+    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+  }
+
+  loading.value = false
+  // console.log(data)
+}
+
 async function removeTask (task: Todo) {
   const { error } = await client.from<Todo>('todos').delete().match({ id: task.id })
 
@@ -125,7 +183,6 @@ async function removeTask (task: Todo) {
 
   // tasks.splice(tasks.indexOf(task), 1)
   emit('refreshBoard')
-
 }
 
 async function removeColumn (boardColumnId: number) {
