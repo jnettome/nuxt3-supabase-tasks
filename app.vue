@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-purple-950 bg-gray-800 text-slate-50">
+  <div class="min-h-screen bg-gray-950 text-slate-50">
     <header class="border-gray-200 px-4 lg:px-6 py-2.5">
       <div class="flex flex-wrap justify-between items-center mx-auto">
         <NuxtLink to="/boards">tarefas</NuxtLink>

@@ -27,9 +27,9 @@
         type="text"
         name="newColumn"
         placeholder="Add a column"
-        autofocus
         :loading="loadingColumn"
       />
+        <!-- autofocus -->
       <button type="submit">
         Add column
       </button>
@@ -45,6 +45,12 @@
         <h1>{{ modalTask.task }}</h1>
         <p class="w-[100px]">#{{ modalTask.id }}</p>
       </div>
+
+      <div>
+        <MarkdownComponent :block="{ content: modalTask.body }">
+        </MarkdownComponent>
+      </div>
+
       <span class="text-sm text-gray-600 truncate">{{ $dayjs(modalTask.created_at).format('D MMM LT') }}</span>
       
       <!-- <p>{{ modalTask.is_complete ? 'done' : '' }}</p> -->
@@ -71,6 +77,7 @@ const isShowNewColumn = ref(false)
 const modalTask = ref({
   id: 0,
   task: '',
+  body: '',
   is_complete: false,
   position: 0,
   board_id: 0,

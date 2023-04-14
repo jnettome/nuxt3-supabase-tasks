@@ -1,6 +1,7 @@
 export interface Todo {
   id: number;
   task: string;
+  body?: string;
   board_id?: number;
   board_column_id?: number;
   position?: number;

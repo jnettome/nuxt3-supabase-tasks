@@ -4,13 +4,14 @@
       <!-- text-sm -->
       <h3 class="text-gray-400 font-semibold font-sans tracking-wide">{{ name }}</h3>
 
-      <div class="actions">
-        <button @click="isShowNew = !isShowNew">
-          add task
+      <div class="flex">
+        <button class="px-3 py-2 rounded text-sm font-semibold bg-slate-800 text-gray-300 hover:text-gray-200 hover:bg-slate-950" @click="toggleNewTask">
+          <span v-if="!isShowNew">add task</span>
+          <span v-else>close</span>
         </button>
 
         <button
-          class="ml-3 text-red-200"
+          class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-600 hover:text-red-300 hover:bg-red-800"
           @click="removeColumn(id)"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
@@ -22,23 +23,24 @@
 
     </header>
 
-    <form v-if="isShowNew" class="flex px-2 gap-2 my-2" @submit.prevent="addTask">
+    <form v-show="isShowNew" class="flex px-2 gap-2 my-2" @submit.prevent="addTask">
       <input
         v-model="newTask"
         class="w-full bg-gray-700 px-3 py-2 outline-0"
         type="text"
         name="newTask"
         placeholder="Add a task"
-        autofocus
+        ref="newTaskField"
         :loading="loading"
+        @keydown.esc="toggleNewTask"
       />
     </form>
 
     <!-- {{ drag }} -->
     <!-- v-if="todos.length > 0" -->
-    <badge-component color="red">
+    <!-- <badge-component color="red">
       salve
-    </badge-component>
+    </badge-component> -->
 
     <div body-class="px-6 py-2">
       <draggable :animation="200" ghost-class="ghost-card" style="height: 90vh; overflow-y: auto;" item-key="position" v-model="itemsDraggable" @start="drag=true" @end="drag=false" group="people">
@@ -102,7 +104,17 @@ const user = useSupabaseUser()
 const loading = ref(false)
 const isShowNew = ref(false)
 const newTask = ref('')
+const newTaskField = ref()
 const route = useRoute()
+
+function toggleNewTask () { 
+  isShowNew.value = !isShowNew.value
+  if (isShowNew.value) {
+    setTimeout(() => {
+      newTaskField.value?.focus()
+    }, 100)
+  }
+}
 
 const drag = ref(false)
 const itemsDraggable = computed({
