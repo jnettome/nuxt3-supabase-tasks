@@ -1,18 +1,26 @@
 <template>
-  <div class="w-full my-[50px]">
+  <div class="w-full my-4">
     <div class="flex items-center justify-between">
-      <h1 class="mb-12 text-6xl font-bold u-text-white">
+      <h1 class="mb-4 text-6xl font-bold u-text-white">
         {{ board.name }}
       </h1>
-      <button
-        class="ml-3 text-red-600"
-        @click="removeBoard(board)"
-      >
-        Delete Board
-      </button>
+
+      <div>
+        <button
+          class="ml-3 text-red-600"
+          @click="removeBoard(board)"
+        >
+          Delete Board
+        </button>
+
+        <button @click="isShowNewColumn = !isShowNewColumn">
+          Add column
+        </button>
+      </div>
+
     </div>
 
-    <form class="flex gap-2 my-2" @submit.prevent="addColumn">
+    <form v-if="isShowNewColumn" class="flex gap-2 my-2" @submit.prevent="addColumn">
       <input
         v-model="newColumn"
         class="w-full bg-gray-700 px-3 py-2 outline-0"
@@ -27,14 +35,25 @@
       </button>
     </form>
 
-    <div v-if="board.board_columns.length > 0" class="mt-16 border-1 border-gray-50 flex overflow-x-auto">
+    <div v-if="board.board_columns.length > 0" class="mt-4 border-1 border-gray-50 flex overflow-x-scroll">
       <BoardColumnComponent @onTaskClicked="onTaskClicked" @refreshBoard="onRefreshBoard" v-for="column in board.board_columns" :key="column.id" v-bind="column" />
     </div>
 
     <ModalComponent :show="isShowModal" @onCloseModal="onCloseModal">
-      <p class="mb-4">
+
+      <div class="flex mt-4 justify-between">
+        <h1>{{ modalTask.task }}</h1>
+        <p class="w-[100px]">#{{ modalTask.id }}</p>
+      </div>
+      <span class="text-sm text-gray-600 truncate">{{ $dayjs(modalTask.created_at).format('D MMM LT') }}</span>
+      
+      <!-- <p>{{ modalTask.is_complete ? 'done' : '' }}</p> -->
+      <!-- <p>#{{ modalTask.position }}</p> -->
+      <!-- <p>#{{ modalTask.board_id }}</p> -->
+      <!-- <p>#{{ modalTask.board_column_id }}</p> -->
+      <!-- <p class="mb-4">
         {{ modalTask }}
-      </p>
+      </p> -->
     </ModalComponent>
   </div>
 </template>
@@ -48,7 +67,17 @@ definePageMeta({
 })
 
 const isShowModal = ref(false)
-const modalTask = ref()
+const isShowNewColumn = ref(false)
+const modalTask = ref({
+  id: 0,
+  task: '',
+  is_complete: false,
+  position: 0,
+  board_id: 0,
+  board_column_id: 0,
+  created_at: '',
+  updated_at: ''
+})
 
 async function onCloseModal () {
   isShowModal.value = false

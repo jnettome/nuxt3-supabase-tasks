@@ -1,20 +1,28 @@
 <template>
-  <div class="bg-zinc-800 min-h-16 mr-4 w-full min-w-full md:min-w-0 md:w-1/4 lg:max-w-sm">
-    <header class="flex items-center justify-between p-2 border-b border-gray-500 mb-4">
-      <h3 class="font-medium">{{ name }} {{ id }}</h3>
+  <div class="rounded-lg bg-zinc-900 min-h-16 mr-4 w-full min-w-full md:min-w-0 md:w-1/4 lg:max-w-sm">
+    <header class="flex items-center justify-between px-4 py-3 pt-5 mb-0">
+      <!-- text-sm -->
+      <h3 class="text-gray-400 font-semibold font-sans tracking-wide">{{ name }}</h3>
 
-      <button
-        class="ml-3 text-red-200"
-        @click="removeColumn(id)"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
-          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
-        </svg>
-      </button>
+      <div class="actions">
+        <button @click="isShowNew = !isShowNew">
+          add task
+        </button>
+
+        <button
+          class="ml-3 text-red-200"
+          @click="removeColumn(id)"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+            <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+          </svg>
+        </button>
+      </div>
+
     </header>
 
-    <form class="flex px-2 gap-2 my-2" @submit.prevent="addTask">
+    <form v-if="isShowNew" class="flex px-2 gap-2 my-2" @submit.prevent="addTask">
       <input
         v-model="newTask"
         class="w-full bg-gray-700 px-3 py-2 outline-0"
@@ -28,11 +36,25 @@
 
     <!-- {{ drag }} -->
     <!-- v-if="todos.length > 0" -->
+    <badge-component color="red">
+      salve
+    </badge-component>
 
     <div body-class="px-6 py-2">
-      <draggable style="min-height: 100vh" item-key="position" v-model="itemsDraggable" @start="drag=true" @end="drag=false" group="people">
+      <draggable :animation="200" ghost-class="ghost-card" style="height: 90vh; overflow-y: auto;" item-key="position" v-model="itemsDraggable" @start="drag=true" @end="drag=false" group="people">
         <template #item="{ element }">
-          <div @click="toggleModal(element)" class="my-4 mx-2 p-2 bg-zinc-950">{{ element.task }}</div>
+          <div @click="toggleModal(element)" class="mt-3 mx-2 px-3 py-3 bg-zinc-800 rounded cursor-pointer shadow border border-black">
+            <p class="text-white break-words font-sans text-sm tracking-wide">{{ element.task }}</p>
+            <!-- font-semibold  -->
+             <!-- text-sm -->
+
+            <div class="flex mt-4 justify-between items-center">
+              <span class="text-sm text-gray-600 truncate">{{ $dayjs(element.created_at).format('D MMM LT') }}</span>
+            </div>
+
+            <!-- numero de comentarios -->
+            <!-- numero de attachments -->
+          </div>
         </template>
       </draggable>
         <!-- <div class="flex items-center justify-between">
@@ -59,6 +81,7 @@
 <script setup lang="ts">
 import draggable from "vuedraggable";
 
+
 // set props
 const column = defineProps<{
   id: number,
@@ -77,6 +100,7 @@ import { Todo } from '~/types/todos'
 const client = useSupabaseClient()
 const user = useSupabaseUser()
 const loading = ref(false)
+const isShowNew = ref(false)
 const newTask = ref('')
 const route = useRoute()
 
@@ -215,5 +239,10 @@ async function removeColumn (boardColumnId: number) {
 .block {
   background: #ccc;
   margin-bottom: 2rem;
+}
+.ghost-card {
+  opacity: 0.2;
+  /* background: #F7FAFC; */
+  border: 1px dashed #4299e1;
 }
 </style>
