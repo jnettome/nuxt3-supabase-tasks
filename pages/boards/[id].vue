@@ -50,6 +50,11 @@
 
       <div v-if="isEditing">
         <!-- editing -->
+
+        <button @click.stop.prevent="deleteTask(modalTask)" class="px-3 py-2 rounded text-sm font-semibold bg-slate-800 text-gray-300 hover:text-gray-200 hover:bg-slate-950">
+          delete task
+        </button>
+
         <form @submit.prevent="updateTask(modalTask)">
           <input
             v-model="modalTask.task"
@@ -133,6 +138,7 @@ async function onTaskClicked (task: Todo) {
   // console.log('onTaskClicked', task)
   modalTask.value = task
   isShowModal.value = true
+  isEditing.value = false
   // !isShowModal.value
 }
 
@@ -153,11 +159,16 @@ const { data: board, refresh } = await useAsyncData('board', async () => {
     .select('id, name, board_columns(*, todos(*)))')
     .eq('id', route.params.id)
     .eq('user_id', user.value?.id)
+    .order('created_at', { foreignTable: 'board_columns', ascending: true })
     .order('position', { foreignTable: 'board_columns.todos', ascending: true })
     .order('created_at', { foreignTable: 'board_columns.todos', ascending: false })
     .limit(1)
     .single()
   return data
+})
+
+useHead({
+  title: () => board.value?.name || 'Board',
 })
 
 // Once page is mounted, listen to changes on the `collaborators` table and refresh collaborators when receiving event
@@ -230,10 +241,24 @@ async function updateTask (task: Todo) {
 
   isLoading.value = false
   isEditing.value = false
-
-  
-
   // boards.splice(boards.indexOf(task), 1)
+}
+
+async function deleteTask (params: any) {
+  if (!confirm('Are you sure you want to delete this task?')) return;
+
+  const { error } = await client.from<Todo>('todos').delete().match({ id: params.id })
+
+  if (error) {
+    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+  }
+
+  isLoading.value = false
+  isEditing.value = false
+
+  onCloseModal()
+  // boards.splice(boards.indexOf(task), 1)
+  
 }
 
 async function removeBoard (board: Board) {

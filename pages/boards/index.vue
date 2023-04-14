@@ -1,6 +1,7 @@
 <template>
-  <div class="w-full my-[50px]">
-    <h1 class="mb-12 text-6xl font-bold u-text-white">
+  <div class="w-full my-4">
+    <!-- <h1 class="mb-12 text-6xl font-bold u-text-white"> -->
+    <h1 class="mb-4 text-6xl font-bold u-text-white">
       Boards
     </h1>
     <form class="flex gap-2 my-2" @submit.prevent="addBoard">
@@ -38,6 +39,10 @@ import { Board } from '~/types/boards'
 
 definePageMeta({
   middleware: 'auth'
+})
+
+useHead({
+  title: 'boards',
 })
 
 const client = useSupabaseClient()

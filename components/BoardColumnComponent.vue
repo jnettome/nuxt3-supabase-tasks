@@ -2,15 +2,49 @@
   <div class="rounded-lg bg-zinc-900 min-h-16 mr-4 w-full min-w-full md:min-w-0 md:w-1/4 lg:max-w-sm">
     <header class="flex items-center justify-between px-4 py-3 pt-5 mb-0">
       <!-- text-sm -->
-      <h3 class="text-gray-400 font-semibold font-sans tracking-wide">{{ name }}</h3>
+      <div class="flex items-center">
+        <div v-if="!isEditing">
+          <h3 class="text-gray-400 font-semibold font-sans tracking-wide">
+            {{ name }}
+          </h3>
+        </div>
+        <div v-show="isEditing">
+          <form class="flex items-center" @submit.prevent="updateColumn(form)">
+            <input
+              class="bg-zinc-600 text-gray-100 p-2 font-semibold font-sans tracking-wide outline-0"
+              type="text"
+              name="name"
+              ref="nameInput"
+              :disabled="isEditingLoading"
+              placeholder="Add column name"
+              @keydown.esc="toggleEditing"
+              v-model="form.name">
+            <button type="submit" class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-700 hover:text-gray-300 hover:bg-gray-800">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+
+        <button @click="toggleEditing" class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-700 hover:text-gray-300 hover:bg-gray-800">
+          <svg v-if="!isEditing" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+          </svg>
+          <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+            <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+          </svg>
+        </button>
+      </div>
 
       <div class="flex">
-        <button class="px-3 py-2 rounded text-sm font-semibold bg-slate-800 text-gray-300 hover:text-gray-200 hover:bg-slate-950" @click="toggleNewTask">
+        <button v-if="!isEditing" class="px-3 py-2 rounded text-sm font-semibold bg-slate-800 text-gray-300 hover:text-gray-200 hover:bg-slate-950" @click="toggleNewTask">
           <span v-if="!isShowNew">add task</span>
           <span v-else>close</span>
         </button>
 
         <button
+          v-if="isEditing"
           class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-600 hover:text-red-300 hover:bg-red-800"
           @click="removeColumn(id)"
         >
@@ -103,9 +137,28 @@ const client = useSupabaseClient()
 const user = useSupabaseUser()
 const loading = ref(false)
 const isShowNew = ref(false)
+const isEditing = ref(false)
+const isEditingLoading = ref(false)
+const nameInput = ref()
+
 const newTask = ref('')
 const newTaskField = ref()
 const route = useRoute()
+
+const form = ref({
+  name: column.name,
+  id: column.id
+})
+
+function toggleEditing () {
+  isEditing.value = !isEditing.value
+  if (isEditing.value) {
+    isEditingLoading.value = false
+    setTimeout(() => {
+      nameInput.value?.focus()
+    }, 100)
+  }
+}
 
 function toggleNewTask () { 
   isShowNew.value = !isShowNew.value
@@ -170,11 +223,28 @@ async function updateTask (task: Todo) {
   emit('refreshBoard')
 }
 
+async function updateColumn (column: any) {
+  isEditingLoading.value = true
+
+  const { error } = await client.from<BoardColumn>('board_columns').update({ name: column.name }).match({ id: column.id })
+
+  if (error) {
+    isEditingLoading.value = false
+    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+  }
+
+  isEditing.value = false
+  isEditingLoading.value = true
+
+  emit('refreshBoard')
+}
+
 async function updateTaskPosition (taskId: number, position: number) {
   loading.value = true
   const { error } = await client.from<Todo>('todos').update({ position: position }).match({ id: taskId })
 
   if (error) {
+    loading.value = false
     return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
@@ -187,6 +257,7 @@ async function updateTaskBoardColumn (taskId: number, boardColumnId: number) {
   const { error } = await client.from<Todo>('todos').update({ board_column_id: boardColumnId }).match({ id: taskId })
 
   if (error) {
+    loading.value = false
     return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
@@ -202,6 +273,7 @@ async function updateTaskPositionInSupabase (value: Array) {
   const { data, error } = await client.rpc('update_todos_order', { payload });
   
   if (error) {
+    loading.value = false
     return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 

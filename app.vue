@@ -34,6 +34,19 @@ const user = useSupabaseUser()
 // const toggleDark = () => {
 //   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'
 // }
+useHead({
+  // title: 'home',
+  titleTemplate: (titleChunk) => {
+    return titleChunk ? `${titleChunk} | tarefas.me` : 'tarefas.me';
+  },
+  meta: [
+    { name: 'description', content: 'a dead simple trello like task manager' }
+  ],
+  bodyAttrs: {
+    // class: 'test'
+  },
+  // script: [ { innerHTML: 'console.log(\'Hello world\')' } ]
+})
 
 const logout = async () => {
   await client.auth.signOut()
