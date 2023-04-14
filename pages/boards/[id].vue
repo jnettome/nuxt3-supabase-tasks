@@ -1,43 +1,88 @@
 <template>
   <div class="w-full my-4">
     <div class="flex items-center justify-between">
-      <h1 class="mb-4 text-6xl font-bold u-text-white">
-        {{ board.name }}
-      </h1>
+      <div class="flex items-center">
+        <div v-if="!isEditing">
+          <h1 class="mb-4 text-6xl font-bold u-text-white">
+            {{ board.name }}
+          </h1>
+        </div>
+        <div v-show="isEditing">
+          <form class="flex items-center" @submit.prevent="updateBoard(form)">
+            <input
+              class="bg-zinc-600 text-gray-100 p-2 font-semibold mb-4 text-xl font-bold u-text-white outline-0"
+              type="text"
+              name="name"
+              ref="nameInput"
+              :disabled="isEditingLoading"
+              placeholder="Add board name"
+              @keydown.esc="toggleEditing"
+              v-model="form.name">
+            <button type="submit" class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-700 hover:text-gray-300 hover:bg-gray-800">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
+                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
+              </svg>
+            </button>
+          </form>
+        </div>
 
-      <div>
-        <button
-          class="ml-3 text-red-600"
-          @click="removeBoard(board)"
-        >
-          Delete Board
+        <div class="flex items-center">
+          <button @click="toggleEditing" class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-700 hover:text-gray-300 hover:bg-gray-800">
+            <svg v-if="!isEditing" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+              <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
+            </svg>
+            <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+              <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+            </svg>
+          </button>
+
+          <button
+            v-if="isEditing"
+            class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-600 hover:text-red-300 hover:bg-red-800"
+            @click="removeBoard(board)"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+              <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    
+
+    <div class="mt-4 border-1 border-gray-50 flex overflow-x-scroll">
+      <BoardColumnComponent @onTaskClicked="onTaskClicked" @refreshBoard="onRefreshBoard" v-for="column in board.board_columns" :key="column.id" v-bind="column" />
+
+      <div class="rounded-lg flex items-start bg-zinc-900 min-h-16 mr-4 text-center md:min-w-[150px] w-[150px]">
+        <button @click="addNewColumn" class="text-gray-700 hover:text-gray-500 mt-4 p-4">
+          Click here to add a new column
         </button>
-
+      </div>
+    </div>
+    <div v-if="false" class="rounded-lg bg-zinc-900 min-h-16 mr-4 w-full min-w-full md:min-w-0 md:w-1/4 lg:max-w-sm">
         <button @click="isShowNewColumn = !isShowNewColumn">
           Add column
         </button>
+        <div class="flex items-center">
+          <form v-if="isShowNewColumn" class="flex gap-2 my-2" @submit.prevent="addColumn">
+            <input
+              v-model="newColumn"
+              class="w-full bg-gray-700 px-3 py-2 outline-0"
+              type="text"
+              name="newColumn"
+              placeholder="Add a column"
+              :loading="loadingColumn"
+            />
+              <!-- autofocus -->
+            <button type="submit">
+              Add column
+            </button>
+          </form>
+        
+        </div>
       </div>
-
-    </div>
-
-    <form v-if="isShowNewColumn" class="flex gap-2 my-2" @submit.prevent="addColumn">
-      <input
-        v-model="newColumn"
-        class="w-full bg-gray-700 px-3 py-2 outline-0"
-        type="text"
-        name="newColumn"
-        placeholder="Add a column"
-        :loading="loadingColumn"
-      />
-        <!-- autofocus -->
-      <button type="submit">
-        Add column
-      </button>
-    </form>
-
-    <div v-if="board.board_columns.length > 0" class="mt-4 border-1 border-gray-50 flex overflow-x-scroll">
-      <BoardColumnComponent @onTaskClicked="onTaskClicked" @refreshBoard="onRefreshBoard" v-for="column in board.board_columns" :key="column.id" v-bind="column" />
-    </div>
 
     <ModalComponent :show="isShowModal" @onCloseModal="onCloseModal">
 
@@ -114,7 +159,19 @@ definePageMeta({
 })
 
 const isEditing = ref(false)
+const isEditingLoading = ref(false)
 const isLoading = ref(false)
+const nameInput = ref()
+
+async function toggleEditing () {
+  isEditing.value = !isEditing.value
+  if (isEditing.value) {
+    isEditingLoading.value = false
+    setTimeout(() => {
+      nameInput.value?.focus()
+    }, 100)
+  }
+}
 
 const isShowModal = ref(false)
 const isShowNewColumn = ref(false)
@@ -167,6 +224,46 @@ const { data: board, refresh } = await useAsyncData('board', async () => {
   return data
 })
 
+const form = ref({
+  name: board.value?.name || '',
+  id: board.value?.id || 0
+})
+
+async function updateBoard (params: any) {
+  const { error } = await client.from<Board>('boards').update({ name: params.name }).match({ id: params.id })
+
+  if (error) {
+    isEditingLoading.value = false
+    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+  }
+
+  isEditing.value = false
+  isEditingLoading.value = true
+
+  refresh()
+
+  // emit('refreshBoard')
+  
+  // isEditingLoading.value = true
+  // const { data, error } = await client.from<Board>('boards')
+  //   .update({ name: params.name })
+  //   .eq('id', params.id)
+  //   .eq('user_id', user.value?.id)
+  // if (error) {
+  //   isEditingLoading.value = true
+  //   console.log('error', error)
+  // }
+  // if (data) {
+  //   console.log('data', data)
+  //   refresh()
+  // }
+
+  // isEditing.value = false
+  // isEditingLoading.value = false
+}
+
+
+
 useHead({
   title: () => board.value?.name || 'Board',
 })
@@ -205,6 +302,25 @@ async function addColumn () {
     user_id: user.value.id,
     board_id: route.params.id,
     name: newColumn.value,
+  }).select('id, name').single()
+
+  if (error) {
+    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+  }
+
+  // boards.push(data)
+  refresh()
+
+  newColumn.value = ''
+  loadingColumn.value = false
+}
+
+async function addNewColumn () {
+  loadingColumn.value = true
+  const { error, data } = await client.from<BoardColumn>('board_columns').insert({
+    user_id: user.value.id,
+    board_id: route.params.id,
+    name: 'Unnamed column',
   }).select('id, name').single()
 
   if (error) {

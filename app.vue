@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-gray-950 text-slate-50">
     <header class="border-gray-200 px-4 lg:px-6 py-2.5">
       <div class="flex flex-wrap justify-between items-center mx-auto">
-        <NuxtLink to="/boards">tarefas</NuxtLink>
+        <NuxtLink to="/boards">tarefas.me</NuxtLink>
         <div class="flex items-center justify-between">
           <button v-if="false" @click="toggleDark" class="p-2 mr-4">
             <svg v-if="colorMode.preference === 'dark'" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-brightness-high-fill" viewBox="0 0 16 16">
@@ -40,7 +40,16 @@ useHead({
     return titleChunk ? `${titleChunk} | tarefas.me` : 'tarefas.me';
   },
   meta: [
-    { name: 'description', content: 'a dead simple trello like task manager' }
+    { name: 'description', content: 'a dead simple trello like task manager' },
+    { name: "msapplication-TileColor", content: "#000000" },
+    { name: "theme-color", content: "#000000" }
+  ],
+  link: [
+    { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+    { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32x32.png" },
+    { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16x16.png" },
+    { rel: "manifest", href: "/site.webmanifest" },
+    { rel: "mask-icon", href: "/safari-pinned-tab.svg", color: "#000000" }
   ],
   bodyAttrs: {
     // class: 'test'

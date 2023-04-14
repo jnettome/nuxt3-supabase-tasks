@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-lg bg-zinc-900 min-h-16 mr-4 w-full min-w-full md:min-w-0 md:w-1/4 lg:max-w-sm">
+  <div class="rounded-lg bg-zinc-900 min-h-16 mr-4 w-full min-w-full md:max-w-lg md:min-w-[350px] md:w-1/4 lg:max-w-sm">
     <header class="flex items-center justify-between px-4 py-3 pt-5 mb-0">
       <!-- text-sm -->
       <div class="flex items-center">
