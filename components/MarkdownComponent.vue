@@ -1,5 +1,6 @@
 <template>
-  <div class="container mx-auto grid place-content-center" v-if="block.content">
+  <div class="my-4" v-if="block.content">
+    <!-- container mx-auto grid place-content-center -->
      <!-- prose-pre:bg-zinc-300 prose-pre:text-gray-800 bg-gray-100  -->
     <div
       class="prose-sm prose-slate text-sm"

@@ -41,25 +41,61 @@
 
     <ModalComponent :show="isShowModal" @onCloseModal="onCloseModal">
 
-      <div class="flex mt-4 justify-between">
-        <h1>{{ modalTask.task }}</h1>
-        <p class="w-[100px]">#{{ modalTask.id }}</p>
-      </div>
+      <!-- this needs to go to separate components: one for editing, one for display -->
 
-      <div>
-        <MarkdownComponent :block="{ content: modalTask.body }">
-        </MarkdownComponent>
-      </div>
+      <button class="px-3 py-2 rounded text-sm font-semibold bg-slate-800 text-gray-300 hover:text-gray-200 hover:bg-slate-950" @click.stop.prevent="isEditing = !isEditing">
+        <span v-if="isEditing">cancel editing</span>
+        <span v-else>edit task</span>
+      </button>
 
-      <span class="text-sm text-gray-600 truncate">{{ $dayjs(modalTask.created_at).format('D MMM LT') }}</span>
+      <div v-if="isEditing">
+        <!-- editing -->
+        <form @submit.prevent="updateTask(modalTask)">
+          <input
+            v-model="modalTask.task"
+            class="w-full bg-gray-700 px-3 py-2 outline-0"
+            type="text"
+            name="task"
+            placeholder="Task title"
+            :disabled="isLoading"
+          />
+          <textarea
+            v-model="modalTask.body"
+            class="w-full bg-gray-700 px-3 py-2 outline-0 mt-2 h-100"
+            type="text"
+            name="body"
+            placeholder="Add more details"
+            :disabled="isLoading"
+          />
+          <button type="submit" class="px-3 py-2 rounded text-sm font-semibold bg-slate-800 text-gray-300 hover:text-gray-200 hover:bg-slate-950">
+            Update task
+          </button>
+        </form>
+      </div>
       
-      <!-- <p>{{ modalTask.is_complete ? 'done' : '' }}</p> -->
-      <!-- <p>#{{ modalTask.position }}</p> -->
-      <!-- <p>#{{ modalTask.board_id }}</p> -->
-      <!-- <p>#{{ modalTask.board_column_id }}</p> -->
-      <!-- <p class="mb-4">
-        {{ modalTask }}
-      </p> -->
+      <div v-else>
+        <!-- viewing -->
+        <div class="flex mt-4 justify-between">
+          <h1>{{ modalTask.task }}</h1>
+          <p class="w-[100px]">#{{ modalTask.id }}</p>
+        </div>
+
+        <div>
+          <MarkdownComponent :block="{ content: modalTask.body }">
+          </MarkdownComponent>
+        </div>
+
+        <span class="text-sm text-gray-600 truncate">{{ $dayjs(modalTask.created_at).format('D MMM LT') }}</span>
+        
+        <!-- <p>{{ modalTask.is_complete ? 'done' : '' }}</p> -->
+        <!-- <p>#{{ modalTask.position }}</p> -->
+        <!-- <p>#{{ modalTask.board_id }}</p> -->
+        <!-- <p>#{{ modalTask.board_column_id }}</p> -->
+        <!-- <p class="mb-4">
+          {{ modalTask }}
+        </p> -->
+      </div>
+
     </ModalComponent>
   </div>
 </template>
@@ -71,6 +107,9 @@ import { BoardColumn } from '~/types/board_columns'
 definePageMeta({
   middleware: 'auth'
 })
+
+const isEditing = ref(false)
+const isLoading = ref(false)
 
 const isShowModal = ref(false)
 const isShowNewColumn = ref(false)
@@ -177,6 +216,25 @@ async function addColumn () {
 
 //   boards.splice(boards.indexOf(task), 1)
 // }
+
+async function updateTask (task: Todo) {
+  isLoading.value = true
+  const { error } = await client.from<Todo>('todos').update({ 
+    task: task.task,
+    body: task.body,
+  }).match({ id: task.id })
+
+  if (error) {
+    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+  }
+
+  isLoading.value = false
+  isEditing.value = false
+
+  
+
+  // boards.splice(boards.indexOf(task), 1)
+}
 
 async function removeBoard (board: Board) {
   if(!confirm('Are you sure you want to delete this board?')) return;
