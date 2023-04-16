@@ -12,8 +12,11 @@
               <path d="M8 3a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 3zm8 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5zm-13.5.5a.5.5 0 0 0 0-1h-2a.5.5 0 0 0 0 1h2zm11.157-6.157a.5.5 0 0 1 0 .707l-1.414 1.414a.5.5 0 1 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0zm-9.9 2.121a.5.5 0 0 0 .707-.707L3.05 5.343a.5.5 0 1 0-.707.707l1.414 1.414zM8 7a4 4 0 0 0-4 4 .5.5 0 0 0 .5.5h7a.5.5 0 0 0 .5-.5 4 4 0 0 0-4-4z"/>
             </svg>
           </button>
+
+          <NuxtLink class="p-2 mr-4 cursor-pointer" v-for="locale in availableLocales" :key="locale.code" @click="switchLocale(locale.code)">{{ locale.name }}</NuxtLink>
+          
           <button v-if="!!user" class="u-text-white" size="xl" variant="transparent" @click="logout">
-            sair
+            {{ $t('logout') }}
           </button>
         </div>
       </div>
@@ -30,6 +33,19 @@
 const client = useSupabaseClient()
 const user = useSupabaseUser()
 const colorMode = useColorMode()
+
+const { locale, locales, setLocale } = useI18n()
+
+// const switchLocalePath = useSwitchLocalePath()
+
+const switchLocale = (code: string) => {
+  // locale.value = code
+  // alert(code)
+  setLocale(code)
+}
+const availableLocales = computed(() => {
+  return (locales.value).filter(i => i.code !== locale.value)
+})
 
 const toggleDark = () => {
   colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'

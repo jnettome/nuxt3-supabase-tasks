@@ -11,8 +11,28 @@ export default defineNuxtConfig({
     '@nuxtjs/supabase',
     '@nuxtjs/tailwindcss',
     '@nuxtjs/google-fonts',
-    '@nuxtjs/color-mode'
+    '@nuxtjs/color-mode',
+    '@nuxtjs/i18n',
   ],
+  i18n: {
+    locales: [
+      {
+        code: 'en',
+        name: 'en'
+      },
+      {
+        code: 'pt',
+        name: 'ptbr'
+      }
+    ],
+    strategy: 'no_prefix', // https://i18n.nuxtjs.org/options-reference#strategy
+    defaultLocale: 'en',
+    // detectBrowserLanguage: {
+      // useCookie: true,
+      // cookieKey: 'i18n_redirected_tarefas',
+      // redirectOn: 'root',  // recommended
+    // }
+  },
   colorMode: {
     classSuffix: ''
   },

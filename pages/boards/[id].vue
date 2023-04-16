@@ -57,7 +57,7 @@
 
       <div class="rounded-lg flex items-start dark:bg-zinc-900 min-h-16 mr-4 text-center md:min-w-[150px] w-[150px]">
         <button @click="addNewColumn" class="text-gray-700 hover:text-gray-500 mt-4 p-4">
-          Click here to add a new column
+          {{ $t('create_column') }}
         </button>
       </div>
     </div>
@@ -70,11 +70,11 @@
 
       <div class="flex">
         <button class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950" @click.stop.prevent="isEditing = !isEditing">
-          <span v-if="isEditing">cancel editing</span>
-          <span v-else>edit task</span>
+          <span v-if="isEditing">{{ $t('cancel_editing') }}</span>
+          <span v-else>{{ $t('edit_task') }}</span>
         </button>
         <button v-if="isEditing" @click.stop.prevent="deleteTask(modalTask)" class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
-          delete task
+          {{ $t('delete_task') }}
         </button>
       </div>
 
@@ -102,7 +102,7 @@
           />
 
           <button type="submit" class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
-            Update task
+            {{ $t('update_task') }}
           </button>
         </form>
       </div>

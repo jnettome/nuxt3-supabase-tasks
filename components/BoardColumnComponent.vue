@@ -17,7 +17,7 @@
               name="name"
               ref="nameInput"
               :disabled="isEditingLoading"
-              placeholder="Add column name"
+              :placeholder="$t('add_column_name')"
               @keydown.esc="toggleEditing"
               v-model="form.name">
             <button type="submit" class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-700 hover:bg-gray-300 dark:hover:text-gray-300 hover:dark:bg-gray-800">
@@ -40,8 +40,8 @@
 
       <div class="flex">
         <button v-if="!isEditing" class="px-3 py-2 rounded text-sm font-semibold text-slate-700 bg-slate-300 hover:text-gray-200 hover:bg-slate-400 hover:dark:text-gray-200 dark:text-gray-300 dark:bg-slate-800 hover:dark:bg-slate-950" @click="toggleNewTask">
-          <span v-if="!isShowNew">add task</span>
-          <span v-else>close</span>
+          <span v-if="!isShowNew">{{ $t('add_task') }}</span>
+          <span v-else>{{ $t('close') }}</span>
         </button>
 
         <button
@@ -292,7 +292,7 @@ async function updateTaskBoardColumnInSupabase (newValue: Array) {
   // find added cards that weren't on the original todos array before
   const newColumn = newValue.filter(x => !column.todos.includes(x));
   if (newColumn.length > 0) {
-    console.log('new todo added', newColumn)
+    // console.log('new todo added', newColumn)
 
     updateTaskBoardColumn(newColumn[0].id, column.id)
   }

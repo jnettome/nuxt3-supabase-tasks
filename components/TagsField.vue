@@ -7,7 +7,7 @@
     </div>
 
     <button @click="toggleEditingTags" class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
-      Edit Tags
+      {{ $t('edit_tags') }}
     </button>
 
     <div v-if="isEditing" class="w-[300px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-4 mt-1">
@@ -35,8 +35,8 @@
       </div>
 
       <button @click="toggleNewTag" class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
-        <span v-if="!isNewTag">Create new tag</span>
-        <span v-else>Back</span>
+        <span v-if="!isNewTag">{{ $t('create_new_tag') }}</span>
+        <span v-else>{{ $t('back') }}</span>
       </button>
 
       <div v-if="isNewTag" class="mt-2">
@@ -45,14 +45,14 @@
             class="w-full border border-gray-300 rounded-md py-2 px-3 text-gray-900 dark:text-gray-300 dark:bg-gray-800 dark:border-gray-600"
             type="text"
             ref="nameInput"
-            placeholder="create new tag"
+            :placeholder="$t('create_new_tag')"
             v-model="newTag"
           />
 
           <ColorSelector @onColorSelected="onColorSelected" />
 
           <button type="submit" class="px-3 py-2 w-full rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
-            Create Tag
+            {{ $t('create_tag') }}
           </button>
         </form>
       </div>

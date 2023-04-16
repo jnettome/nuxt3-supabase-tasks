@@ -1,7 +1,7 @@
 <template>
   <div class="w-full my-4">
     <h1 class="mb-4 text-6xl font-bold">
-      Boards
+      {{ $t('boards') }}
     </h1>
 
     <div v-if="boards.length > 0" class="mt-12">
@@ -19,7 +19,7 @@
           <!-- block w-100 text-2xl font-medium border-gray-200 divide-y divide-gray-200 px-6 py-2 card dark:bg-gray-600 mb-4 -->
           <!-- <button @click="createNewBoard" class="text-gray-700 hover:text-gray-500 mt-4 p-4"> -->
           <button @click="createNewBoard" class="bg-slate-500 text-gray-300 hover:bg-slate-700 hover:text-gray-200 transition dark:text-gray-500 dark:hover:text-gray-200 mt-4 p-4 rounded-lg flex dark:bg-zinc-800 dark:hover:bg-zinc-600 min-h-20 items-center mr-4 text-center">
-            Create new board
+            {{ $t('create_board') }}
           </button>
           
         </li>
