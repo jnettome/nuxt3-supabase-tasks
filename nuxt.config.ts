@@ -15,18 +15,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
   ],
   i18n: {
-    locales: [
-      {
-        code: 'en',
-        name: 'en'
-      },
-      {
-        code: 'pt',
-        name: 'ptbr'
-      }
-    ],
-    strategy: 'prefix_except_default', // https://i18n.nuxtjs.org/options-reference#strategy
-    defaultLocale: 'en',
+    
     // detectBrowserLanguage: {
       // useCookie: true,
       // cookieKey: 'i18n_redirected_tarefas',

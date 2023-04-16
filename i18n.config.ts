@@ -1,6 +1,18 @@
 export default defineI18nConfig(nuxt => ({
   legacy: false,
   locale: 'en',
+  locales: [
+    {
+      code: 'en',
+      name: 'en'
+    },
+    {
+      code: 'pt',
+      name: 'ptbr'
+    }
+  ],
+  strategy: 'prefix_except_default', // https://i18n.nuxtjs.org/options-reference#strategy
+  defaultLocale: 'en',
   messages: {
     en: {
       logout: 'logout',
