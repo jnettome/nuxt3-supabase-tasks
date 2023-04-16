@@ -25,7 +25,7 @@ export default defineNuxtConfig({
         name: 'ptbr'
       }
     ],
-    strategy: 'no_prefix', // https://i18n.nuxtjs.org/options-reference#strategy
+    strategy: 'prefix_except_default', // https://i18n.nuxtjs.org/options-reference#strategy
     defaultLocale: 'en',
     // detectBrowserLanguage: {
       // useCookie: true,
