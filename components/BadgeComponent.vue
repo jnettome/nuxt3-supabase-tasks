@@ -1,6 +1,6 @@
 <template>
-  <div :class="`px-3 h-6 rounded-full text-xs font-semibold flex items-center bg-${badgeColor}-300 text-${badgeColor}-700`">
-    <span :class="`w-2 h-2 rounded-full mr-1 bg-${badgeColor}-400`"></span>
+  <div :class="`px-3 h-6 rounded-full text-xs font-semibold flex items-center dark:bg-${badgeColor}-300 text-${badgeColor}-700`">
+    <span :class="`w-2 h-2 rounded-full mr-1 dark:bg-${badgeColor}-400`"></span>
     <span>
       <slot></slot>
     </span>

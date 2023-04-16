@@ -5,12 +5,12 @@
     </h2>
 
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
-      <div class="bg-zinc-900 py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div class="dark:bg-zinc-900 py-8 px-4 shadow sm:rounded-lg sm:px-10">
         <div v-if="!emailSent">
           <form @submit.stop.prevent="login">
-            <input v-model="email" class="w-full font-bold bg-zinc-700 px-3 py-2 outline-0 border-b border-gray-500 mb-4" type="email" placeholder="Your email address" autofocus />
+            <input v-model="email" class="w-full font-bold dark:bg-zinc-700 px-3 py-2 outline-0 border-b border-gray-500 mb-4" type="email" placeholder="Your email address" autofocus />
             <button
-              class="px-3 py-2 rounded text-sm w-full font-semibold bg-slate-800 text-gray-300 hover:text-gray-200 hover:bg-slate-950"
+              class="px-3 py-2 rounded text-sm w-full font-semibold dark:bg-slate-800 text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950"
               :disabled="loading"
               type="submit"
             >

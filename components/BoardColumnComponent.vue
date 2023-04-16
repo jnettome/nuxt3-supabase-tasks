@@ -1,17 +1,18 @@
 <template>
-  <div class="rounded-lg bg-zinc-900 min-h-16 mr-4 w-full min-w-full md:max-w-lg md:min-w-[350px] md:w-1/4 lg:max-w-sm">
+  <!-- bg-slate-300 text-slate-900 -->
+  <div class="rounded-lg bg-slate-200 dark:bg-zinc-900 min-h-16 mr-4 w-full min-w-full md:max-w-lg md:min-w-[350px] md:w-1/4 lg:max-w-sm">
     <header class="flex items-center justify-between px-4 py-3 pt-5 mb-0">
       <!-- text-sm -->
       <div class="flex items-center">
         <div v-if="!isEditing">
-          <h3 class="text-gray-400 font-semibold font-sans tracking-wide">
+          <h3 class="text-slate-700 dark:text-gray-400 font-semibold font-sans tracking-wide">
             {{ name }}
           </h3>
         </div>
         <div v-show="isEditing">
           <form class="flex items-center" @submit.prevent="updateColumn(form)">
             <input
-              class="bg-zinc-600 text-gray-100 p-2 font-semibold font-sans tracking-wide outline-0"
+              class="dark:bg-zinc-600 dark:text-gray-100 bg-slate-100 text-slate-700 p-2 font-semibold font-sans tracking-wide outline-0"
               type="text"
               name="name"
               ref="nameInput"
@@ -19,7 +20,7 @@
               placeholder="Add column name"
               @keydown.esc="toggleEditing"
               v-model="form.name">
-            <button type="submit" class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-700 hover:text-gray-300 hover:bg-gray-800">
+            <button type="submit" class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-700 hover:bg-gray-300 dark:hover:text-gray-300 hover:dark:bg-gray-800">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16">
                 <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/>
               </svg>
@@ -27,7 +28,7 @@
           </form>
         </div>
 
-        <button @click="toggleEditing" class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-700 hover:text-gray-300 hover:bg-gray-800">
+        <button @click="toggleEditing" class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-700 hover:bg-gray-300 dark:hover:text-gray-300 hover:dark:bg-gray-800">
           <svg v-if="!isEditing" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
             <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
           </svg>
@@ -38,14 +39,14 @@
       </div>
 
       <div class="flex">
-        <button v-if="!isEditing" class="px-3 py-2 rounded text-sm font-semibold bg-slate-800 text-gray-300 hover:text-gray-200 hover:bg-slate-950" @click="toggleNewTask">
+        <button v-if="!isEditing" class="px-3 py-2 rounded text-sm font-semibold text-slate-700 bg-slate-300 hover:text-gray-200 hover:bg-slate-400 hover:dark:text-gray-200 dark:text-gray-300 dark:bg-slate-800 hover:dark:bg-slate-950" @click="toggleNewTask">
           <span v-if="!isShowNew">add task</span>
           <span v-else>close</span>
         </button>
 
         <button
           v-if="isEditing"
-          class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-600 hover:text-red-300 hover:bg-red-800"
+          class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-600 hover:bg-red-300 hover:text-red-700 hover:dark:text-red-300 hover:dark:bg-red-800"
           @click="removeColumn(id)"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
@@ -60,7 +61,7 @@
     <form v-show="isShowNew" class="flex px-2 gap-2 my-2" @submit.prevent="addTask">
       <input
         v-model="newTask"
-        class="w-full bg-gray-700 px-3 py-2 outline-0"
+        class="w-full dark:bg-gray-700 px-3 py-2 outline-0"
         type="text"
         name="newTask"
         placeholder="Add a task"
@@ -79,13 +80,13 @@
     <div body-class="px-6 py-2">
       <draggable :animation="200" ghost-class="ghost-card" style="height: 90vh; overflow-y: auto;" item-key="position" v-model="itemsDraggable" @start="drag=true" @end="drag=false" group="people">
         <template #item="{ element }">
-          <div @click="toggleModal(element)" class="mt-3 mx-2 px-3 py-3 bg-zinc-800 rounded cursor-pointer shadow border border-black">
-            <p class="text-white break-words font-sans text-sm tracking-wide">{{ element.task }}</p>
+          <div @click="toggleModal(element)" class="mt-3 mx-2 px-3 py-3 dark:bg-zinc-800 bg-slate-300 rounded cursor-pointer shadow border border-gray-400 dark:border-black">
+            <p class="dark:text-white text-gray-700 break-words font-sans text-sm tracking-wide">{{ element.task }}</p>
             <!-- font-semibold  -->
              <!-- text-sm -->
 
             <div class="flex mt-4 justify-between items-center">
-              <span class="text-sm text-gray-600 truncate">{{ $dayjs(element.created_at).format('D MMM LT') }}</span>
+              <span class="text-sm text-gray-400 dark:text-gray-600 truncate">{{ $dayjs(element.created_at).format('D MMM LT') }}</span>
             </div>
 
             <!-- numero de comentarios -->
@@ -325,7 +326,7 @@ async function removeColumn (boardColumnId: number) {
   margin-bottom: 2rem;
 }
 .ghost-card {
-  opacity: 0.2;
+  opacity: 0.3;
   /* background: #F7FAFC; */
   border: 1px dashed #4299e1;
 }

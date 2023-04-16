@@ -1,23 +1,8 @@
 <template>
   <div class="w-full my-4">
-    <!-- <h1 class="mb-12 text-6xl font-bold u-text-white"> -->
-    <h1 class="mb-4 text-6xl font-bold u-text-white">
+    <h1 class="mb-4 text-6xl font-bold">
       Boards
     </h1>
-    <form v-if="false" class="flex gap-2 my-2" @submit.prevent="addBoard">
-      <input
-        v-model="boardName"
-        class="w-full bg-gray-700 px-3 py-2 outline-0"
-        type="text"
-        name="boardName"
-        placeholder="Name your board here"
-        autofocus
-        :loading="loading"
-      />
-      <button type="submit">
-        Create
-      </button>
-    </form>
 
     <div v-if="boards.length > 0" class="mt-12">
       <ul>
@@ -25,15 +10,15 @@
           v-for="(task, index) of boards"
           :key="`task${index}`"
         >
-          <!-- block text-2xl font-medium border-gray-200 divide-y divide-gray-200 px-6 py-2 card bg-gray-600 mb-4 -->
-          <NuxtLink :to="`/boards/${task.id}`" class="text-6xl pt-6 pb-2 mb-4 flex w-100 font-medium hover:bg-zinc-900 hover:px-10 transition border-b border-gray-800">
+          <!-- block text-2xl font-medium border-gray-200 divide-y divide-gray-200 px-6 py-2 card dark:bg-gray-600 mb-4 -->
+          <NuxtLink :to="`/boards/${task.id}`" class="text-6xl pt-6 pb-2 mb-4 flex w-100 font-medium dark:hover:bg-zinc-900 hover:px-4 transition-all transform border-b border-gray-800">
             {{task.name}}
           </NuxtLink>
         </li>
         <li class="mt-16">
-          <!-- block w-100 text-2xl font-medium border-gray-200 divide-y divide-gray-200 px-6 py-2 card bg-gray-600 mb-4 -->
+          <!-- block w-100 text-2xl font-medium border-gray-200 divide-y divide-gray-200 px-6 py-2 card dark:bg-gray-600 mb-4 -->
           <!-- <button @click="createNewBoard" class="text-gray-700 hover:text-gray-500 mt-4 p-4"> -->
-          <button @click="createNewBoard" class="text-gray-700 hover:text-gray-500 mt-4 p-4 rounded-lg flex bg-zinc-900 min-h-20 items-center mr-4 text-center">
+          <button @click="createNewBoard" class="bg-slate-500 text-gray-300 hover:bg-slate-700 hover:text-gray-200 transition dark:text-gray-500 dark:hover:text-gray-200 mt-4 p-4 rounded-lg flex dark:bg-zinc-800 dark:hover:bg-zinc-600 min-h-20 items-center mr-4 text-center">
             Create new board
           </button>
           
