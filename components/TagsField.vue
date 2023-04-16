@@ -137,6 +137,7 @@ const { data: tags, refresh } = await useAsyncData('tags', async () => {
   const { data, error } = await client.from<Tag>('tags')
     .select('id, name, color')
     .eq('user_id', user.value?.id)
+    .eq('board_id', localProps.boardId)
     .order('created_at', { ascending: false })
   return data
 })
