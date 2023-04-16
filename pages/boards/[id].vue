@@ -61,28 +61,6 @@
         </button>
       </div>
     </div>
-    <div v-if="false" class="rounded-lg dark:bg-zinc-900 min-h-16 mr-4 w-full min-w-full md:min-w-0 md:w-1/4 lg:max-w-sm">
-        <button @click="isShowNewColumn = !isShowNewColumn">
-          Add column
-        </button>
-        <div class="flex items-center">
-          <form v-if="isShowNewColumn" class="flex gap-2 my-2" @submit.prevent="addColumn">
-            <input
-              v-model="newColumn"
-              class="w-full dark:bg-gray-700 px-3 py-2 outline-0"
-              type="text"
-              name="newColumn"
-              placeholder="Add a column"
-              :loading="loadingColumn"
-            />
-              <!-- autofocus -->
-            <button type="submit">
-              Add column
-            </button>
-          </form>
-        
-        </div>
-      </div>
 
     <ModalComponent :show="isShowModal" @onCloseModal="onCloseModal">
 
@@ -98,7 +76,6 @@
         <button v-if="isEditing" @click.stop.prevent="deleteTask(modalTask)" class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
           delete task
         </button>
-
       </div>
 
 
@@ -123,6 +100,7 @@
             @keydown.ctrl.enter="updateTask(modalTask)"
             @keydown.meta.enter="updateTask(modalTask)"
           />
+
           <button type="submit" class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
             Update task
           </button>
@@ -150,6 +128,8 @@
         <!-- <p class="mb-4">
           {{ modalTask }}
         </p> -->
+
+        <TagsField @onTagsUpdated="onTagsUpdated" :todoId="modalTask.id" :taggings="modalTask.taggings" />
       </div>
 
     </ModalComponent>
@@ -197,6 +177,11 @@ async function onCloseModal () {
   isShowModal.value = false
 }
 
+async function onTagsUpdated (taggings: any, todoId: number) {
+  const tagIds: number[] = Object.values(taggings)
+  updateTaskTaggings(modalTask.value, tagIds, todoId)
+}
+
 async function onTaskClicked (task: Todo) {
   // console.log('onTaskClicked', task)
   modalTask.value = task
@@ -219,7 +204,7 @@ const router = useRouter()
 
 const { data: board, refresh } = await useAsyncData('board', async () => {
   const { data, error } = await client.from<Board>('boards')
-    .select('id, name, board_columns(*, todos(*)))')
+    .select('id, name, board_columns(*, todos(*, taggings(*, tags(*)))))')
     .eq('id', route.params.id)
     .eq('user_id', user.value?.id)
     .order('created_at', { foreignTable: 'board_columns', ascending: true })
@@ -247,36 +232,14 @@ async function updateBoard (params: any) {
   isEditingLoading.value = true
 
   refresh()
-
-  // emit('refreshBoard')
-  
-  // isEditingLoading.value = true
-  // const { data, error } = await client.from<Board>('boards')
-  //   .update({ name: params.name })
-  //   .eq('id', params.id)
-  //   .eq('user_id', user.value?.id)
-  // if (error) {
-  //   isEditingLoading.value = true
-  //   console.log('error', error)
-  // }
-  // if (data) {
-  //   console.log('data', data)
-  //   refresh()
-  // }
-
-  // isEditing.value = false
-  // isEditingLoading.value = false
 }
-
-
 
 useHead({
   title: () => board.value?.name || 'Board',
 })
 
-// Once page is mounted, listen to changes on the `collaborators` table and refresh collaborators when receiving event
 onMounted(() => {
-  // Real time listener for new workouts
+  // Real time listener for new todos
   realtimeChannel = client.channel('public:todos').on(
     'postgres_changes',
     // { event: '*', schema: 'public', table: 'todos', filter: `user_id=eq.${user.value?.id}&board_id=eq.${route.params.id}` },
@@ -364,6 +327,34 @@ async function updateTask (task: Todo) {
   isLoading.value = false
   isEditing.value = false
   // boards.splice(boards.indexOf(task), 1)
+}
+
+async function updateTaskTaggings(task: Todo, tagIds: number[], todoId: number) {
+  isLoading.value = true
+
+  const payload = tagIds.map((item: any) => ({ user_id: user.value?.id, todo_id: todoId, tag_id: item }))
+
+  const { data, error } = await client.rpc('update_todos_taggings', { payload });
+
+  // tem que apagar todos os taggings antes disso
+  
+  if (error) {
+    isLoading.value = false
+    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+  }
+
+  isLoading.value = false
+  // const { error } = await client.from<Todo>('todos').update({ 
+  //   taggings: task.taggings,
+  // }).match({ id: task.id })
+
+  // if (error) {
+  //   return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+  // }
+
+  // isLoading.value = false
+  // isEditing.value = false
+  // // boards.splice(boards.indexOf(task), 1)
 }
 
 async function deleteTask (params: any) {

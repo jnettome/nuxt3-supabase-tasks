@@ -9,6 +9,7 @@ export interface Todo {
   user_id?: string;
   user?: string;
   created_at?: string;
+  tags?: string[];
 }
 
 
