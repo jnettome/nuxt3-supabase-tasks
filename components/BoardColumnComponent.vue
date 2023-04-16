@@ -80,40 +80,30 @@
     <div body-class="px-6 py-2">
       <draggable :animation="200" ghost-class="ghost-card" style="height: 90vh; overflow-y: auto;" item-key="position" v-model="itemsDraggable" @start="drag=true" @end="drag=false" group="people">
         <template #item="{ element }">
-          <div @click="toggleModal(element)" class="mt-3 mx-2 px-3 py-3 dark:bg-zinc-800 bg-slate-300 rounded cursor-pointer shadow border border-gray-400 dark:border-black">
-            <p class="dark:text-white text-gray-700 break-words font-sans text-sm tracking-wide">{{ element.task }}</p>
-            <!-- font-semibold  -->
-             <!-- text-sm -->
-
-            <div class="flex mt-4 justify-between items-center">
-              <span class="text-sm text-gray-400 dark:text-gray-600 truncate">{{ $dayjs(element.created_at).format('D MMM LT') }}</span>
+          <div>
+            <div v-if="element.task.toString().startsWith('---')" @click="toggleModal(element)" class="mt-3 mx-2 px-3 py-1 dark:bg-zinc-950 bg-slate-100 rounded cursor-pointer border-gray-400 dark:border-black text-center">
+              {{ element.task.substring(3) }}
             </div>
+            <div v-else @click="toggleModal(element)" class="mt-3 mx-2 px-3 py-3 dark:bg-zinc-800 bg-slate-300 rounded cursor-pointer shadow border border-gray-400 dark:border-black">
+              <p class="dark:text-white text-gray-700 break-words font-sans text-sm tracking-wide">{{ element.task }}</p>
+              <!-- font-semibold  -->
+              <!-- text-sm -->
 
-            <!-- numero de comentarios -->
-            <!-- numero de attachments -->
+              <div class="flex mt-4 justify-between items-center">
+                <span class="text-sm text-gray-400 dark:text-gray-600 truncate">{{ $dayjs(element.created_at).format('D MMM LT') }}</span>
+              </div>
 
-            <Badge :noText="true" v-for="tag in element.taggings" :key="tag.id" :color="tag.tags.color" class="mt-2">
-              {{ tag.tags.name }}
-            </Badge>
+              <!-- numero de comentarios -->
+              <!-- numero de attachments -->
+
+              <Badge :noText="true" v-for="tag in element.taggings" :key="tag.id" :color="tag.tags.color" class="mt-2">
+                {{ tag.tags.name }}
+              </Badge>
+            </div>
           </div>
         </template>
       </draggable>
-        <!-- <div class="flex items-center justify-between">
-          <input
-            type="checkbox"
-            :checked="task.is_complete"
-            @change="updateTask(task)"
-          />
-          <span>{{ task.task }}</span>
-          <button
-            class="ml-3 text-red-600"
-            @click="removeTask(task)"
-          >
-            Remove
-          </button>
-        </div> -->
-        
-      <!-- </div> -->
+
     </div>
     
   </div>
