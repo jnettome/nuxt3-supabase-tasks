@@ -129,7 +129,7 @@
           {{ modalTask }}
         </p> -->
 
-        <TagsField @onTagsUpdated="onTagsUpdated" :todoId="modalTask.id" :taggings="modalTask.taggings" />
+        <TagsField ref="tagsField" @onTagsUpdated="onTagsUpdated" :todoId="modalTask.id" :taggings="modalTask.taggings" :boardId="route.params.id" />
       </div>
 
     </ModalComponent>
@@ -148,6 +148,7 @@ const isEditing = ref(false)
 const isEditingLoading = ref(false)
 const isLoading = ref(false)
 const nameInput = ref()
+const tagsField = ref()
 
 async function toggleEditing () {
   isEditing.value = !isEditing.value
@@ -170,7 +171,8 @@ const modalTask = ref({
   board_id: 0,
   board_column_id: 0,
   created_at: '',
-  updated_at: ''
+  updated_at: '',
+  taggings: []
 })
 
 async function onCloseModal () {
@@ -245,6 +247,14 @@ onMounted(() => {
     // { event: '*', schema: 'public', table: 'todos', filter: `user_id=eq.${user.value?.id}&board_id=eq.${route.params.id}` },
     { event: '*', schema: 'public', table: 'todos', filter: `board_id=eq.${route.params.id}` },
     () => refresh()
+  )
+  .on(
+    'postgres_changes',
+    { event: '*', schema: 'public', table: 'taggings', filter: `board_id=eq.${route.params.id}` },
+    () => {
+      // console.log('taggings updated')
+      refresh()
+    }
   )
   realtimeChannel.subscribe()
   // https://supabase.com/docs/guides/realtime/extensions/postgres-changes#filter-changes
@@ -332,29 +342,24 @@ async function updateTask (task: Todo) {
 async function updateTaskTaggings(task: Todo, tagIds: number[], todoId: number) {
   isLoading.value = true
 
-  const payload = tagIds.map((item: any) => ({ user_id: user.value?.id, todo_id: todoId, tag_id: item }))
+  await client.from('taggings').delete().match({ todo_id: todoId, user_id: user.value?.id })
 
+  const payload = tagIds.map((item: any) => ({ user_id: user.value?.id, todo_id: todoId, tag_id: item, board_id: route.params.id }))
   const { data, error } = await client.rpc('update_todos_taggings', { payload });
 
-  // tem que apagar todos os taggings antes disso
-  
   if (error) {
     isLoading.value = false
     return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
+  const { data: taggings, error: errorTaggings } = await client.from('taggings').select('id, tag_id, todo_id, tags(*)').match({ todo_id: todoId, user_id: user.value?.id })
+
+  modalTask.value.taggings = taggings
+  // console.log(data)
+
+  // tem que apagar todos os taggings antes disso
+
   isLoading.value = false
-  // const { error } = await client.from<Todo>('todos').update({ 
-  //   taggings: task.taggings,
-  // }).match({ id: task.id })
-
-  // if (error) {
-  //   return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
-  // }
-
-  // isLoading.value = false
-  // isEditing.value = false
-  // // boards.splice(boards.indexOf(task), 1)
 }
 
 async function deleteTask (params: any) {

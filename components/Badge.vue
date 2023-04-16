@@ -1,7 +1,7 @@
 <template>
-  <div :class="`px-3 h-6 rounded-full text-xs font-semibold inline-flex items-center ${badgeColor}`">
-    <span :class="`w-2 h-2 rounded-full mr-1 ${circleColor}`"></span>
-    <span>
+  <div :class="`px-3 h-6 rounded-full text-xs font-semibold inline-flex items-center ${badgeColor} mr-1`">
+    <span :class="`w-2 h-2 rounded-full ${noText ? '' : 'mr-1'} ${circleColor}`"></span>
+    <span v-show="!noText">
       <slot></slot>
     </span>
   </div>
@@ -9,6 +9,7 @@
 <script setup lang="ts">
 const column = defineProps<{
   color: string;
+  noText?: boolean;
 }>()
 
 const colorVariants = {

@@ -91,6 +91,10 @@
 
             <!-- numero de comentarios -->
             <!-- numero de attachments -->
+
+            <Badge :noText="true" v-for="tag in element.taggings" :key="tag.id" :color="tag.tags.color" class="mt-2">
+              {{ tag.tags.name }}
+            </Badge>
           </div>
         </template>
       </draggable>

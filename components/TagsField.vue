@@ -6,11 +6,11 @@
       </Badge>
     </div>
 
-    <button @click="toggleEditing" class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
+    <button @click="toggleEditingTags" class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
       Edit Tags
     </button>
 
-    <div v-if="isEditing" class="w-[300px] bg-white border border-slate-200 p-4 mt-1">
+    <div v-if="isEditing" class="w-[300px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-4 mt-1">
       <div v-if="!isNewTag" class="tags-field__tags">
 
         <label class="cursor-pointer flex items-center py-2 my-1" v-for="tag in tags" :key="tag.id">
@@ -47,7 +47,6 @@
             ref="nameInput"
             placeholder="create new tag"
             v-model="newTag"
-            @keyup.enter.stop.prevent="addTag"
           />
 
           <ColorSelector @onColorSelected="onColorSelected" />
@@ -67,42 +66,49 @@
 import { Tag } from '~/types/tags'
 
 const localProps = defineProps<{
-  taggings?: Tag[],
-  todoId: number
+  taggings?: any,
+  todoId: number,
+  boardId: string,
 }>()
 
 const emit = defineEmits<{
   (event: 'onTagsUpdated', taggings: any, todoId: number): void
 }>()
 
-const currentTaggings = ref(localProps.taggings?.map((tag) => tag.id) ?? [])
-
-watch(currentTaggings, (value) => {
-  console.log(value)
-
-  emit('onTagsUpdated', value, localProps.todoId)
+watch(() => localProps.todoId, () => {
+  isEditing.value = false
 })
 
+const currentTaggings = computed({
+  set (value) {
+    emit('onTagsUpdated', value, localProps.todoId)
+  },
+  get () {
+    const tagIds = localProps.taggings?.map((tag) => tag.tags.id) ?? []
+    return tagIds
+  }
+})
 
 const isEditing = ref(false)
 const isNewTag = ref(false)
 const isEditingLoading = ref(false)
 const isLoading = ref(false)
 const nameInput = ref()
-
 const tag = ref()
 const tagsModel = ref()
 
-
-async function toggleEditing () {
+async function toggleEditingTags () {
   isEditing.value = !isEditing.value
-  // if (isEditing.value) {
-  //   isEditingLoading.value = false
-  //   setTimeout(() => {
-  //     nameInput.value?.focus()
-  //   }, 100)
-  // }
 }
+
+// async function toggleEditSingleTag () {
+//   if (isEditing.value) {
+//     isEditingLoading.value = false
+//     setTimeout(() => {
+//       nameInput.value?.focus()
+//     }, 100)
+//   }
+// }
 
 async function toggleNewTag () {
   isNewTag.value = !isNewTag.value
@@ -135,23 +141,10 @@ const { data: tags, refresh } = await useAsyncData('tags', async () => {
   return data
 })
 
-const createdTags = computed(() => {
-  const test = tags.value?.map(tag => { return { text: tag.name, id: tag.id } })
-  console.log(test)
-  return test
-})
-
 async function addTag () {
   if (!newTag.value) return
 
-  const { error } = await client.from<Tag>('tags').insert({ name: newTag.value, user_id: user.value?.id, color: newColor.value })
-
-  // loadingColumn.value = true
-  // const { error, data } = await client.from<BoardColumn>('board_columns').insert({
-  //   user_id: user.value.id,
-  //   board_id: route.params.id,
-  //   name: newColumn.value,
-  // }).select('id, name').single()
+  const { error } = await client.from<Tag>('tags').insert({ name: newTag.value, user_id: user.value?.id, color: newColor.value, board_id: localProps.boardId })
 
   if (error) {
     isEditingLoading.value = false
@@ -164,30 +157,21 @@ async function addTag () {
   refresh()
 }
 
-// async function updateBoard (params: any) {
-//   const { error } = await client.from<Board>('boards').update({ name: params.name }).match({ id: params.id })
-
-//   if (error) {
-//     isEditingLoading.value = false
-//     return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
-//   }
-
-//   isEditing.value = false
-//   isEditingLoading.value = true
-
-//   refresh()
-
-// }
-
 // Once page is mounted, listen to changes on the `collaborators` table and refresh collaborators when receiving event
+// { event: '*', schema: 'public', table: 'todos', filter: `user_id=eq.${user.value?.id}&board_id=eq.${route.params.id}` },
 onMounted(() => {
   // Real time listener for new workouts
+  isEditing.value = false
   realtimeChannel = client.channel('public:tags').on(
     'postgres_changes',
-    // { event: '*', schema: 'public', table: 'todos', filter: `user_id=eq.${user.value?.id}&board_id=eq.${route.params.id}` },
-    { event: '*', schema: 'public', table: 'tags' },
+    { event: '*', schema: 'public', table: 'tags', filter: `board_id=eq.${localProps.boardId}` },
     () => refresh()
   )
+  // .on(
+  //   'postgres_changes',
+  //   { event: '*', schema: 'public', table: 'taggings', filter: `board_id=eq.${localProps.boardId}` },
+  //   () => refresh()
+  // )
   realtimeChannel.subscribe()
 })
   // Don't forget to unsubscribe when user left the page

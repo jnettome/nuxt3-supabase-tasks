@@ -39,6 +39,7 @@ create table tags (
   user_id uuid references auth.users on delete cascade not null,
   name text check (char_length(name) > 1),
   color text check (char_length(color) < 15),
+  board_id bigint references boards(id) on delete cascade not null,
   lower_tag text GENERATED ALWAYS AS (lower(name)) STORED,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -49,6 +50,7 @@ create table taggings (
   user_id uuid references auth.users on delete cascade not null,
   todo_id bigint references todos(id) on delete cascade not null,
   tag_id bigint references tags(id) on delete cascade not null,
+  board_id bigint references boards(id) on delete cascade not null,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 alter table taggings enable row level security;
@@ -122,8 +124,8 @@ $$ language sql;
 -- /* funcao massa pra atualizar varios taggings */
 -- await supabase.rpc('update_todos_taggings', {payload: [{ "id": 11, "position": 1 }, { "id": 1, "position": 2 }]}));
 create or replace function update_todos_taggings(payload json) returns setof taggings as $$
-  insert into taggings (user_id, todo_id, tag_id) 
-        select user_id, todo_id, tag_id from json_populate_recordset(null::taggings, payload)
+  insert into taggings (user_id, todo_id, tag_id, board_id) 
+        select user_id, todo_id, tag_id, board_id from json_populate_recordset(null::taggings, payload)
     on conflict do nothing
     returning taggings.*;
 $$ language sql;
