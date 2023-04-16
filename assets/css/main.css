@@ -1,3 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --toastify-color-light: rgba(226, 232, 240, .8);
+  --toastify-color-dark: rgba(30, 41, 59, .8);
+}

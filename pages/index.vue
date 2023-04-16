@@ -55,7 +55,7 @@ const login = async (provider: string) => {
   const { error, data } = await client.auth.signInWithOtp({ email: email.value })
 
   if (error) {
-    alert(error)
+    useNuxtApp().$toast.error(JSON.stringify(error))
   }
 
   loading.value = false

@@ -149,7 +149,7 @@ async function addTag () {
 
   if (error) {
     isEditingLoading.value = false
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   newTag.value = ''

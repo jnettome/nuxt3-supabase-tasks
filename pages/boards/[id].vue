@@ -227,7 +227,7 @@ async function updateBoard (params: any) {
 
   if (error) {
     isEditingLoading.value = false
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   isEditing.value = false
@@ -284,7 +284,7 @@ async function addColumn () {
   }).select('id, name').single()
 
   if (error) {
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   // boards.push(data)
@@ -303,7 +303,7 @@ async function addNewColumn () {
   }).select('id, name').single()
 
   if (error) {
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   // boards.push(data)
@@ -317,7 +317,7 @@ async function addNewColumn () {
 //   const { error } = await client.from<BoardColumn>('board_columns').delete().match({ id: task.id })
 
 //   if (error) {
-//     return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+//     return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
 //   }
 
 //   boards.splice(boards.indexOf(task), 1)
@@ -331,7 +331,7 @@ async function updateTask (task: Todo) {
   }).match({ id: task.id })
 
   if (error) {
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   isLoading.value = false
@@ -349,7 +349,7 @@ async function updateTaskTaggings(task: Todo, tagIds: number[], todoId: number) 
 
   if (error) {
     isLoading.value = false
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   const { data: taggings, error: errorTaggings } = await client.from('taggings').select('id, tag_id, todo_id, tags(*)').match({ todo_id: todoId, user_id: user.value?.id })
@@ -368,7 +368,7 @@ async function deleteTask (params: any) {
   const { error } = await client.from<Todo>('todos').delete().match({ id: params.id })
 
   if (error) {
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   isLoading.value = false
@@ -385,7 +385,7 @@ async function removeBoard (board: Board) {
   const { error } = await client.from<Board>('boards').delete().match({ id: board.id })
 
   if (error) {
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   router.push('/boards')

@@ -25,6 +25,7 @@
   "dependencies": {
     "@vueuse/components": "^9.13.0",
     "dayjs": "^1.11.7",
+    "vue3-toastify": "^0.1.6",
     "vuedraggable": "^4.1.0"
   }
 }

@@ -24,7 +24,8 @@ export default defineI18nConfig(nuxt => ({
         please_wait: 'Please wait...',
         email_sent: "We've sent you an email with a link to sign in.",
         your_email_address: 'Your email address'
-      }
+      },
+      new_board_name: 'My new board 🎉',
     },
     'pt': {
       logout: 'sair',
@@ -48,7 +49,8 @@ export default defineI18nConfig(nuxt => ({
         please_wait: 'aguarde...',
         email_sent: "Enviamos um email com um link para você acessar.",
         your_email_address: 'Seu endereço de email'
-      }
+      },
+      new_board_name: 'Meu novo projeto 🎉',
     }
   }
 }))

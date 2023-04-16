@@ -199,7 +199,7 @@ async function addTask () {
   }).select('*').single()
 
   if (error) {
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   newTask.value = ''
@@ -212,7 +212,7 @@ async function updateTask (task: Todo) {
   const { error } = await client.from<Todo>('todos').update({ is_complete: task.is_complete }).match({ id: task.id })
 
   if (error) {
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   emit('refreshBoard')
@@ -225,7 +225,7 @@ async function updateColumn (column: any) {
 
   if (error) {
     isEditingLoading.value = false
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   isEditing.value = false
@@ -240,7 +240,7 @@ async function updateTaskPosition (taskId: number, position: number) {
 
   if (error) {
     loading.value = false
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   emit('refreshBoard')
@@ -253,7 +253,7 @@ async function updateTaskBoardColumn (taskId: number, boardColumnId: number) {
 
   if (error) {
     loading.value = false
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   emit('refreshBoard')
@@ -269,7 +269,7 @@ async function updateTaskPositionInSupabase (value: Array) {
   
   if (error) {
     loading.value = false
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   loading.value = false
@@ -292,7 +292,7 @@ async function removeTask (task: Todo) {
   const { error } = await client.from<Todo>('todos').delete().match({ id: task.id })
 
   if (error) {
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   // tasks.splice(tasks.indexOf(task), 1)
@@ -305,7 +305,7 @@ async function removeColumn (boardColumnId: number) {
   const { error } = await client.from<Board>('board_columns').delete().match({ id: boardColumnId })
 
   if (error) {
-    return alert(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
+    return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
   emit('refreshBoard')

@@ -41,6 +41,7 @@ const { locale, locales, setLocale } = useI18n()
 const switchLocale = (code: string) => {
   // locale.value = code
   // alert(code)
+  // useNuxtApp().$toast(code)
   setLocale(code)
 }
 const availableLocales = computed(() => {
