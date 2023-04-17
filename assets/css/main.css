@@ -6,3 +6,26 @@
   --toastify-color-light: rgba(226, 232, 240, .8);
   --toastify-color-dark: rgba(30, 41, 59, .8);
 }
+
+html.dark body {
+  background-image: url(/bgs/6.jpeg);
+  background-size: cover;
+}
+html.dark .main-app {
+  background: linear-gradient(300deg, rgba(0, 0, 0, .32) 0%, rgba(0, 0, 0, .32) 100%);
+}
+
+html.dark .preview.light {
+  display: none;
+}
+html.light .preview.dark {
+  display: none;
+}
+
+html.light body {
+  background-image: url(/bgs/l1.jpeg);
+  background-size: cover;
+}
+html.light .main-app {
+  background: linear-gradient(300deg, rgba(255, 255, 255, .32) 255%, rgba(255, 255, 255, .32) 100%);
+}

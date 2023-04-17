@@ -11,9 +11,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'sans': ['Rubik', 'ui-sans-serif', 'system-ui'],
-        'serif': ['Rubik', 'ui-sans-serif', 'system-ui'],
-        'body': ['Rubik', 'ui-sans-serif', 'system-ui'],
+        // 'sans': ['Lato', 'ui-sans-serif', 'system-ui'],
+        // 'serif': ['Lato', 'ui-sans-serif', 'system-ui'],
+        // 'body': ['Lato', 'ui-sans-serif', 'system-ui'],
         // 'serif': ['ui-serif', 'Georgia', ...],
         // 'mono': ['ui-monospace', 'SFMono-Regular', ...],
         // 'display': ['Oswald', ...],

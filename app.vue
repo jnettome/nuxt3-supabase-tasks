@@ -1,5 +1,6 @@
 <template>
-  <div class="min-h-screen bg-slate-300 text-slate-900 dark:bg-gray-950 dark:text-slate-50">
+  <!-- bg-slate-300 dark:bg-gray-950 -->
+  <div :class="appClasses">
     <header class="px-4 lg:px-6 py-2.5">
       <div class="flex flex-wrap justify-between items-center mx-auto">
         <NuxtLink to="/boards">tarefas.me</NuxtLink>
@@ -34,10 +35,17 @@ const client = useSupabaseClient()
 const user = useSupabaseUser()
 const colorMode = useColorMode()
 
+const route = useRoute()
+
+const classesForHome = 'main-app backdrop-blur-xl min-h-screen text-slate-900 dark:text-slate-50'
+const classesForApp = 'bg-slate-300 dark:bg-gray-950 min-h-screen text-slate-900 dark:text-slate-50'
+
+const appClasses = computed(() => {
+  return route.path === '/' ? classesForHome : classesForApp
+})
+
 // const { locale, locales, setLocale } = useI18n()
-
 // const { locale, locales, setLocale } = useNuxtApp().$i18n
-
 // const switchLocalePath = useSwitchLocalePath()
 // const { i18n } = useNuxtApp()
 
