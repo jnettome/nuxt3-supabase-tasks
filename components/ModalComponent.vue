@@ -16,7 +16,7 @@
         <!-- @click.self.prevent="closeModal"
         @keydown.esc="closeModal" -->
         <div
-          class="flex items-start justify-center min-h-screen pt-24 text-center"
+          class="flex items-start justify-center min-h-screen pt-4 md:pt-24 text-center"
         >
           <transition
             enter-active-class="transition ease-out duration-300 transform "
@@ -27,7 +27,7 @@
             leave-to-class="opacity-0 translate-y-10 translate-y-0 scale-95"
           >
             <div
-              class="relative bg-slate-100 text-slate-800 dark:bg-black dark:text-white rounded-lg text-left overflow-hidden shadow-2xl shadow-gray-600 p-8 w-full md:w-5/6 lg:w-1/2 outline-0"
+              class="relative bg-slate-100 text-slate-800 dark:bg-black dark:text-white rounded-lg text-left shadow-2xl shadow-gray-600 p-8 w-full md:w-5/6 lg:w-3/6 outline-0"
               role="dialog"
               ref="modal"
               aria-modal="true"

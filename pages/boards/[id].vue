@@ -68,69 +68,72 @@
 
       <!-- text-slate-700 bg-slate-300 hover:text-gray-200 hover:bg-slate-400 hover:dark:text-gray-200 dark:text-gray-300 dark:bg-slate-800 hover:dark:bg-slate-950 -->
 
-      <div class="flex">
-        <button class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950" @click.stop.prevent="isEditing = !isEditing">
-          <span v-if="isEditing">{{ $t('cancel_editing') }}</span>
-          <span v-else>{{ $t('edit_task') }}</span>
-        </button>
-        <button v-if="isEditing" @click.stop.prevent="deleteTask(modalTask)" class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
-          {{ $t('delete_task') }}
-        </button>
-      </div>
+      <div class="flex-wrap md:flex">
+        <div v-if="!isEditing" class="w-full md:w-2/3">
+          <div class="block mt-4">
+            <h1 @dblclick="isEditing = true" class="text-xl">{{ modalTask.task }}</h1>
+            <p class="text-sm" v-if="modalTask.board_columns">in {{ modalTask.board_columns?.name }}</p>
+          </div>
 
+          <TagsField :displayTags="true" :todoId="modalTask.id" :taggings="modalTask.taggings" :boardId="route.params.id" />
 
-      <div v-if="isEditing">
+          <div v-if="modalTask.body">
+            <MarkdownComponent :block="{ content: modalTask.body }"></MarkdownComponent>
+          </div>
+          <div v-else>
+            <p @dblclick="isEditing = true" class="text-gray-500">{{ $t('no_description') }}</p>
+          </div>
+        </div>
+        <div v-else class="w-full md:w-2/3">
+          <form @submit.prevent="updateTask(modalTask)">
+            <input
+              v-model="modalTask.task"
+              class="w-full dark:bg-gray-700 px-3 py-2 outline-0"
+              type="text"
+              name="task"
+              placeholder="Task title"
+              :disabled="isLoading"
+              @keydown.esc.self.prevent.stop="isEditing = false"
+            />
+            <textarea
+              v-model="modalTask.body"
+              class="w-full dark:bg-gray-700 px-3 py-2 outline-0 mt-2 h-[200px]"
+              type="text"
+              name="body"
+              placeholder="Add more details"
+              :disabled="isLoading"
+              @keydown.ctrl.enter="updateTask(modalTask)"
+              @keydown.meta.enter="updateTask(modalTask)"
+              @keydown.esc.self.prevent.stop="isEditing = false"
+            />
+
+            <button type="submit" class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
+              {{ $t('update_task') }}
+            </button>
+            or
+            <button @click="isEditing = false" class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
+              {{ $t('cancel') }}
+            </button>
+          </form>
+        </div>
+
+        <div class="w-full md:w-1/3 px-2">
+          <p class="">#{{ modalTask.id }}</p>
+          <span class="text-sm text-gray-600 truncate">{{ $dayjs(modalTask.created_at).format('D MMM LT') }}</span>
+          <!-- <p>{{ modalTask.is_complete ? 'done' : '' }}</p> -->
         
-        <form @submit.prevent="updateTask(modalTask)">
-          <input
-            v-model="modalTask.task"
-            class="w-full dark:bg-gray-700 px-3 py-2 outline-0"
-            type="text"
-            name="task"
-            placeholder="Task title"
-            :disabled="isLoading"
-          />
-          <textarea
-            v-model="modalTask.body"
-            class="w-full dark:bg-gray-700 px-3 py-2 outline-0 mt-2 h-[200px]"
-            type="text"
-            name="body"
-            placeholder="Add more details"
-            :disabled="isLoading"
-            @keydown.ctrl.enter="updateTask(modalTask)"
-            @keydown.meta.enter="updateTask(modalTask)"
-          />
+          <TagsField :displayEditButton="true" ref="tagsField" @onTagsUpdated="onTagsUpdated" :todoId="modalTask.id" :taggings="modalTask.taggings" :boardId="route.params.id" />
 
-          <button type="submit" class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
-            {{ $t('update_task') }}
+          <button v-if="!isEditing" class="text-left px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950" @click.stop.prevent="isEditing = !isEditing">
+            <span>{{ $t('edit_task') }}</span>
           </button>
-        </form>
-      </div>
-      
-      <div v-else>
-        <!-- viewing -->
-        <div class="flex mt-4 justify-between">
-          <h1>{{ modalTask.task }}</h1>
-          <p class="w-[100px]">#{{ modalTask.id }}</p>
+          <button v-if="isEditing" @click.stop.prevent="deleteTask(modalTask)" class="text-left px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
+            {{ $t('delete_task') }}
+          </button>
         </div>
 
-        <div>
-          <MarkdownComponent :block="{ content: modalTask.body }">
-          </MarkdownComponent>
-        </div>
-
-        <span class="text-sm text-gray-600 truncate">{{ $dayjs(modalTask.created_at).format('D MMM LT') }}</span>
-        
-        <!-- <p>{{ modalTask.is_complete ? 'done' : '' }}</p> -->
-        <!-- <p>#{{ modalTask.position }}</p> -->
-        <!-- <p>#{{ modalTask.board_id }}</p> -->
-        <!-- <p>#{{ modalTask.board_column_id }}</p> -->
-        <!-- <p class="mb-4">
-          {{ modalTask }}
-        </p> -->
-
-        <TagsField ref="tagsField" @onTagsUpdated="onTagsUpdated" :todoId="modalTask.id" :taggings="modalTask.taggings" :boardId="route.params.id" />
       </div>
+
 
     </ModalComponent>
   </div>
@@ -172,7 +175,11 @@ const modalTask = ref({
   board_column_id: 0,
   created_at: '',
   updated_at: '',
-  taggings: []
+  taggings: [],
+  board_columns: {
+    name: '',
+    id: ''
+  }
 })
 
 async function onCloseModal () {
@@ -206,7 +213,7 @@ const router = useRouter()
 
 const { data: board, refresh } = await useAsyncData('board', async () => {
   const { data, error } = await client.from<Board>('boards')
-    .select('id, name, board_columns(*, todos(*, taggings(*, tags(*)))))')
+    .select('id, name, board_columns(*, todos(*, board_columns(*),taggings(*, tags(*)))))')
     .eq('id', route.params.id)
     .eq('user_id', user.value?.id)
     .order('created_at', { foreignTable: 'board_columns', ascending: true })

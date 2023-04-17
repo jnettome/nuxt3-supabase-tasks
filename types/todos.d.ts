@@ -10,6 +10,7 @@ export interface Todo {
   user?: string;
   created_at?: string;
   tags?: string[];
+  board_column?: BoardColumn;
 }
 
 

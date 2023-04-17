@@ -89,14 +89,14 @@
               <!-- font-semibold  -->
               <!-- text-sm -->
 
-              <div class="flex mt-4 justify-between items-center">
+              <div class="flex mt-4 justify-between items-center" v-if="false">
                 <span class="text-sm text-gray-400 dark:text-gray-600 truncate">{{ $dayjs(element.created_at).format('D MMM LT') }}</span>
               </div>
 
               <!-- numero de comentarios -->
               <!-- numero de attachments -->
 
-              <Badge :noText="true" v-for="tag in element.taggings" :key="tag.id" :color="tag.tags.color" class="mt-2">
+              <Badge :noText="!isFullBadgeDisplay" @click.self.stop.prevent="isFullBadgeDisplay = !isFullBadgeDisplay" v-for="tag in element.taggings" :key="tag.id" :color="tag.tags.color" class="mt-2">
                 {{ tag.tags.name }}
               </Badge>
             </div>
@@ -112,13 +112,14 @@
 <script setup lang="ts">
 import draggable from "vuedraggable";
 
-
 // set props
 const column = defineProps<{
   id: number,
   name: string,
   todos: Array<{id: number, task: string, board_id: number, board_column_id: number, position: number, is_complete: boolean, created_at: string }>
 }>()
+
+const isFullBadgeDisplay = ref(false)
 
 const emit = defineEmits<{
   (event: 'refreshBoard'): void,

@@ -1,16 +1,16 @@
 <template>
   <div class="tags-field my-4">
-    <div class="current-tags block mb-2" v-if="localProps.taggings?.length > 0">
+    <div class="current-tags block mb-2" v-if="localProps.taggings?.length > 0 && displayTags">
       <Badge :color="tagging.tags.color" v-for="tagging in localProps.taggings" :key="tagging.id">
         {{ tagging.tags.name || '' }}
       </Badge>
     </div>
 
-    <button @click="toggleEditingTags" class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
+    <button v-if="displayEditButton" @click="toggleEditingTags" class="px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950">
       {{ $t('edit_tags') }}
     </button>
 
-    <div v-if="isEditing" class="w-[300px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-4 mt-1">
+    <div v-if="isEditing" class="w-[300px] md:absolute lg:absolute bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 p-4 mt-1">
       <div v-if="!isNewTag" class="tags-field__tags">
 
         <label class="cursor-pointer flex items-center py-2 my-1" v-for="tag in tags" :key="tag.id">
@@ -69,6 +69,8 @@ const localProps = defineProps<{
   taggings?: any,
   todoId: number,
   boardId: string,
+  displayEditButton: boolean,
+  displayTags: boolean
 }>()
 
 const emit = defineEmits<{
