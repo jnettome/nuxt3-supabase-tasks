@@ -4,7 +4,7 @@
       {{ $t('boards') }}
     </h1>
 
-    <div v-if="boards.length > 0" class="mt-12">
+    <div class="mt-12">
       <ul>
         <li
           v-for="(task, index) of boards"
