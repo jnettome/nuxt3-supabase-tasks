@@ -187,6 +187,10 @@ async function addTask () {
     return
   }
 
+  if (newTask.value.length <= 3) {
+    return useNuxtApp().$toast.error('Task must be at least 3 characters long')
+  }
+
   loading.value = true
   const { error, data } = await client.from<Todo>('todos').insert({
     user_id: user.value.id,
@@ -220,6 +224,9 @@ async function updateTask (task: Todo) {
 }
 
 async function updateColumn (column: any) {
+  if (column.name.length <= 3) {
+    return useNuxtApp().$toast.error('Column name must be at least 3 characters long')
+  }
   isEditingLoading.value = true
 
   const { error } = await client.from<BoardColumn>('board_columns').update({ name: column.name }).match({ id: column.id })
