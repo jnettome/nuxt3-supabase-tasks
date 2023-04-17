@@ -13,7 +13,7 @@
             </svg>
           </button>
 
-          <NuxtLink class="p-2 mr-4 cursor-pointer" v-for="locale in availableLocales" :key="locale.code" @click="switchLocale(locale.code)">{{ locale.name }}</NuxtLink>
+          <!-- <NuxtLink class="p-2 mr-4 cursor-pointer" v-for="locale in availableLocales" :key="locale.code" @click="switchLocale(locale.code)">{{ locale.name }}</NuxtLink> -->
           
           <button v-if="!!user" class="u-text-white" size="xl" variant="transparent" @click="logout">
             {{ $t('logout') }}
@@ -34,16 +34,28 @@ const client = useSupabaseClient()
 const user = useSupabaseUser()
 const colorMode = useColorMode()
 
-const { locale, locales, setLocale } = useI18n()
+// const { locale, locales, setLocale } = useI18n()
+
+// const { locale, locales, setLocale } = useNuxtApp().$i18n
 
 // const switchLocalePath = useSwitchLocalePath()
+// const { i18n } = useNuxtApp()
 
 const switchLocale = (code: string) => {
   // locale.value = code
   // alert(code)
   // useNuxtApp().$toast(code)
-  setLocale(code)
+  // console.log(useNuxtApp().$i18n.locale)
+  // console.log(useNuxtApp().i18n)
+  // .setLocale(code)
+  // i18n.setLocale(code)
 }
+const locales = ref([
+  { code: 'en', name: 'English' },
+  { code: 'pt', name: 'Português' }
+])
+const locale = ref('en')
+// const locales = [{ code: 'en', name: 'English' }, { code: 'pt', name: 'Português' }]
 const availableLocales = computed(() => {
   return (locales.value).filter(i => i.code !== locale.value)
 })

@@ -12,16 +12,16 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@nuxtjs/google-fonts',
     '@nuxtjs/color-mode',
-    '@nuxtjs/i18n',
+    // '@nuxtjs/i18n',
   ],
-  i18n: {
+  // i18n: {
     
-    // detectBrowserLanguage: {
-      // useCookie: true,
-      // cookieKey: 'i18n_redirected_tarefas',
-      // redirectOn: 'root',  // recommended
-    // }
-  },
+  //   // detectBrowserLanguage: {
+  //     // useCookie: true,
+  //     // cookieKey: 'i18n_redirected_tarefas',
+  //     // redirectOn: 'root',  // recommended
+  //   // }
+  // },
   colorMode: {
     classSuffix: ''
   },
