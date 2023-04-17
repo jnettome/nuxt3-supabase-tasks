@@ -74,13 +74,13 @@ async function addBoard () {
   loading.value = false
 }
 
-const $t = useI18n().t
+// const $t = useI18n().t
 
 async function createNewBoard () {
   loading.value = true
   const { data, error } = await client.from<Board>('boards').insert({
     user_id: user.value.id,
-    name: $t('new_board_name'),
+    name: 'My new board 🎉',
   }).select('id, name').single()
 
   if (error) {
