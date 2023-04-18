@@ -129,3 +129,10 @@ create or replace function update_todos_taggings(payload json) returns setof tag
     on conflict do nothing
     returning taggings.*;
 $$ language sql;
+
+-- remove min length checks
+-- SELECT constraint_name FROM information_schema.check_constraints WHERE constraint_name ILIKE '%check%';
+ALTER TABLE board_columns DROP CONSTRAINT board_columns_name_check;
+ALTER TABLE boards DROP CONSTRAINT boards_name_check;
+ALTER TABLE tags DROP CONSTRAINT tags_name_check;
+ALTER TABLE todos DROP CONSTRAINT todos_task_check;
