@@ -30,6 +30,8 @@ export default defineNuxtPlugin((nuxtApp) => {
         update_task: 'Update task',
         close: 'close',
         edit_tags: 'Edit Tags',
+        edit_tag: 'Edit tag',
+        delete_tag: 'Delete tag',
         create_new_tag: 'Create new tag',
         create_tag: 'Create tag',
         back: 'back',
@@ -42,6 +44,7 @@ export default defineNuxtPlugin((nuxtApp) => {
           your_email_address: 'Your email address'
         },
         new_board_name: 'My new board 🎉',
+        no_description: 'Double click to add a description'
       },
       'pt': {
         logout: 'sair',
@@ -55,6 +58,8 @@ export default defineNuxtPlugin((nuxtApp) => {
         update_task: 'Atualizar tarefa',
         close: 'fechar',
         edit_tags: 'Editar Tags',
+        edit_tag: 'Edit tag',
+        delete_tag: 'Delete tag',
         create_new_tag: 'Crie uma tag',
         create_tag: 'Criar tag',
         back: 'voltar',
@@ -67,6 +72,7 @@ export default defineNuxtPlugin((nuxtApp) => {
           your_email_address: 'Seu endereço de email'
         },
         new_board_name: 'Meu novo projeto 🎉',
+        no_description: 'Clique duas vezes para adicionar uma descrição'
       }
     }
   })
