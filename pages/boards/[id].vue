@@ -122,7 +122,7 @@
           <span class="text-sm text-gray-600 truncate">{{ $dayjs(modalTask.created_at).format('D MMM LT') }}</span>
           <!-- <p>{{ modalTask.is_complete ? 'done' : '' }}</p> -->
         
-          <TagsField :displayEditButton="true" ref="tagsField" @onTagsUpdated="onTagsUpdated" :todoId="modalTask.id" :taggings="modalTask.taggings" :boardId="route.params.id" />
+          <TagsField :displayTags="false" :displayEditButton="true" ref="tagsField" @onTagsUpdated="onTagsUpdated" :todoId="modalTask.id" :taggings="modalTask.taggings" :boardId="route.params.id" />
 
           <button v-if="!isEditing" class="text-left px-3 py-2 rounded text-sm font-semibold bg-slate-300 text-slate-700 hover:text-gray-200 hover:bg-slate-400 dark:bg-slate-800 dark:text-gray-300 hover:text-gray-200 hover:dark:bg-slate-950" @click.stop.prevent="isEditing = !isEditing">
             <span>{{ $t('edit_task') }}</span>

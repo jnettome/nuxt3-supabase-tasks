@@ -1,6 +1,6 @@
 export interface Tag {
   id: number;
-  name: string;
+  name?: string;
   color?: string;
   user_id?: string;
   board_id?: number;
