@@ -2,19 +2,19 @@
   <div class="w-full my-4">
     <div class="flex items-center justify-between">
       <div class="flex items-center">
-        <div v-if="!isEditing">
+        <div v-if="!isBoardEditing">
           <h1 class="mb-4 text-6xl font-bold u-text-white">
             {{ board.name }}
           </h1>
         </div>
-        <div v-show="isEditing">
+        <div v-show="isBoardEditing">
           <form class="flex items-center" @submit.prevent="updateBoard(form)">
             <input
               class="dark:bg-zinc-600 dark:text-gray-100 bg-slate-200 p-2 font-semibold mb-4 text-xl font-bold outline-0"
               type="text"
               name="name"
               ref="nameInput"
-              :disabled="isEditingLoading"
+              :disabled="isBoardEditingLoading"
               placeholder="Add board name"
               @keydown.esc="toggleEditing"
               v-model="form.name">
@@ -28,7 +28,7 @@
 
         <div class="flex items-center">
           <button @click="toggleEditing" class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-700 hover:bg-gray-400 dark:hover:text-gray-300 hover:dark:bg-gray-800">
-            <svg v-if="!isEditing" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+            <svg v-if="!isBoardEditing" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
               <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
             </svg>
             <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
@@ -37,7 +37,7 @@
           </button>
 
           <button
-            v-if="isEditing"
+            v-if="isBoardEditing"
             class="ml-3 flex items-center justify-center w-8 h-8 rounded-full text-gray-600 hover:dark:text-red-300 hover:text-red-700 hover:dark:bg-red-800 hover:bg-red-300"
             @click="removeBoard(board)"
           >
@@ -149,14 +149,16 @@ definePageMeta({
 
 const isEditing = ref(false)
 const isEditingLoading = ref(false)
+const isBoardEditing = ref(false)
+const isBoardEditingLoading = ref(false)
 const isLoading = ref(false)
 const nameInput = ref()
 const tagsField = ref()
 
 async function toggleEditing () {
-  isEditing.value = !isEditing.value
-  if (isEditing.value) {
-    isEditingLoading.value = false
+  isBoardEditing.value = !isBoardEditing.value
+  if (isBoardEditing.value) {
+    isBoardEditingLoading.value = false
     setTimeout(() => {
       nameInput.value?.focus()
     }, 100)
@@ -233,12 +235,12 @@ async function updateBoard (params: any) {
   const { error } = await client.from<Board>('boards').update({ name: params.name }).match({ id: params.id })
 
   if (error) {
-    isEditingLoading.value = false
+    isBoardEditingLoading.value = false
     return useNuxtApp().$toast.error(`Oups ! Something went wrong ! Error: ${JSON.stringify(error)}`)
   }
 
-  isEditing.value = false
-  isEditingLoading.value = true
+  isBoardEditing.value = false
+  isBoardEditingLoading.value = true
 
   refresh()
 }
