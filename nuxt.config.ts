@@ -14,8 +14,15 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     // '@nuxtjs/i18n',
   ],
+  supabase: {
+    client: {
+      auth: {
+        autoRefreshToken: true,
+      }
+    }
+  },
   // i18n: {
-    
+
   //   // detectBrowserLanguage: {
   //     // useCookie: true,
   //     // cookieKey: 'i18n_redirected_tarefas',

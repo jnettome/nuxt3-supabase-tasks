@@ -13,7 +13,7 @@
     "@nuxtjs/google-fonts": "^3.0.0",
     "@nuxtjs/supabase": "^0.3.5",
     "@nuxtjs/tailwindcss": "^6.6.6",
-    "@supabase/supabase-js": "^2.20.0",
+    "@supabase/supabase-js": "^2.22.0",
     "@tailwindcss/typography": "^0.5.9",
     "@types/markdown-it": "^12.2.3",
     "autoprefixer": "^10.4.14",
